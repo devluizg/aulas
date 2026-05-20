@@ -3,1386 +3,815 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>Análise Combinatória — Revisão Completa</title>
+<title>Função do 2º Grau — Aulas 3 e 4</title>
 <link href="https://fonts.googleapis.com/css2?family=Fredoka+One&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
 <style>
 :root{
-  --bg:#09090f;--surf:rgba(255,255,255,.04);--bord:rgba(255,255,255,.09);
-  --pur:#8b5cf6;--pd:rgba(139,92,246,.15);
-  --grn:#10b981;--gd:rgba(16,185,129,.12);
-  --amb:#f59e0b;--ad:rgba(245,158,11,.10);
-  --sky:#38bdf8;--sd:rgba(56,189,248,.10);
-  --ros:#f43f5e;--rd:rgba(244,63,94,.10);
-  --txt:#e2e8f0;--mut:#94a3b8;
+  --bg:#09090f;--surface:rgba(255,255,255,0.04);--border:rgba(255,255,255,0.09);
+  --purple:#8b5cf6;--pd:rgba(139,92,246,0.15);
+  --green:#10b981;--gd:rgba(16,185,129,0.12);
+  --amber:#f59e0b;--ad:rgba(245,158,11,0.10);
+  --sky:#38bdf8;--sd:rgba(56,189,248,0.10);
+  --rose:#f43f5e;--rd:rgba(244,63,94,0.10);
+  --text:#e2e8f0;--muted:#94a3b8;
 }
 *{box-sizing:border-box;margin:0;padding:0;}
-body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--txt);min-height:100vh;overflow-x:hidden;}
+body{background:var(--bg);font-family:'Nunito',sans-serif;color:var(--text);min-height:100vh;overflow-x:hidden;}
 body::before{content:'';position:fixed;width:700px;height:700px;background:radial-gradient(circle,rgba(139,92,246,.09) 0%,transparent 70%);top:-250px;left:-200px;pointer-events:none;z-index:0;}
 body::after{content:'';position:fixed;width:500px;height:500px;background:radial-gradient(circle,rgba(16,185,129,.08) 0%,transparent 70%);bottom:-150px;right:-150px;pointer-events:none;z-index:0;}
 
-/* HEADER */
-.sh{position:sticky;top:0;z-index:100;background:rgba(9,9,15,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--bord);padding:10px 18px;}
-.hd{max-width:1060px;margin:0 auto;display:flex;align-items:center;gap:12px;}
-.logo{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--pur);white-space:nowrap;}
-.pw{flex:1;}.pl{font-size:.65rem;color:var(--mut);margin-bottom:3px;}
+.sticky-header{position:sticky;top:0;z-index:100;background:rgba(9,9,15,.93);backdrop-filter:blur(16px);border-bottom:1px solid var(--border);padding:10px 18px;}
+.hdr{max-width:1040px;margin:0 auto;display:flex;align-items:center;gap:12px;}
+.logo{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--purple);white-space:nowrap;}
+.pw{flex:1;}.pl{font-size:.65rem;color:var(--muted);margin-bottom:3px;}
 .pb{height:5px;background:rgba(255,255,255,.08);border-radius:99px;overflow:hidden;}
-.pbi{height:100%;width:0%;background:linear-gradient(90deg,var(--pur),var(--grn));border-radius:99px;transition:width .5s;}
-.sc{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--amb);white-space:nowrap;}
+.pbi{height:100%;width:0%;background:linear-gradient(90deg,var(--purple),var(--green));border-radius:99px;transition:width .5s;}
+.sc{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--amber);white-space:nowrap;}
 
-/* TABS */
-.tnav{max-width:1060px;margin:16px auto 0;padding:0 16px;display:flex;gap:5px;flex-wrap:wrap;}
-.tab{font-family:'Fredoka One',cursive;font-size:.78rem;padding:7px 13px;border-radius:9px;border:1px solid var(--bord);background:var(--surf);color:var(--mut);cursor:pointer;transition:all .18s;white-space:nowrap;}
-.tab:hover{color:var(--txt);border-color:rgba(255,255,255,.2);}
-.tab.active{background:var(--pd);border-color:var(--pur);color:#c4b5fd;}
-.tab.xt.active{background:var(--gd);border-color:var(--grn);color:#6ee7b7;}
+.tabs{max-width:1040px;margin:16px auto 0;padding:0 16px;display:flex;gap:5px;flex-wrap:wrap;}
+.tab{font-family:'Fredoka One',cursive;font-size:.8rem;padding:8px 15px;border-radius:9px;border:1px solid var(--border);background:var(--surface);color:var(--muted);cursor:pointer;transition:all .18s;white-space:nowrap;}
+.tab:hover{color:var(--text);border-color:rgba(255,255,255,.2);}
+.tab.active{background:var(--pd);border-color:var(--purple);color:#c4b5fd;}
+.tab.xt.active{background:var(--gd);border-color:var(--green);color:#6ee7b7;}
 
-/* MAIN */
-main{max-width:1060px;margin:0 auto;padding:18px 16px 60px;position:relative;z-index:1;}
+main{max-width:1040px;margin:0 auto;padding:18px 16px 60px;position:relative;z-index:1;}
 .sec{display:none;animation:fadeIn .35s ease;}.sec.active{display:block;}
-.ps-row{display:flex;gap:5px;margin-bottom:18px;}
-.ps{flex:1;height:4px;border-radius:99px;background:var(--bord);transition:background .4s;}
-.ps.done{background:var(--pur);}.ps.cur{background:var(--grn);animation:pulse 1.5s infinite;}
+.psteps{display:flex;gap:5px;margin-bottom:18px;}
+.ps{flex:1;height:4px;border-radius:99px;background:var(--border);transition:background .4s;}
+.ps.done{background:var(--purple);}.ps.cur{background:var(--green);animation:pulse 1.5s infinite;}
 
-/* CARDS */
-.card{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:22px;margin-bottom:16px;}
+.card{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:22px;margin-bottom:16px;}
 .cl{display:inline-block;font-size:.68rem;font-weight:800;padding:3px 10px;border-radius:99px;margin-bottom:10px;letter-spacing:.04em;text-transform:uppercase;}
 .lp{background:var(--pd);color:#c4b5fd;border:1px solid rgba(139,92,246,.3);}
 .lg{background:var(--gd);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
 .la{background:var(--ad);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
 .ls{background:var(--sd);color:#7dd3fc;border:1px solid rgba(56,189,248,.3);}
-.lr{background:var(--rd);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
 h2{font-family:'Fredoka One',cursive;font-size:1.35rem;margin-bottom:8px;}
 p{line-height:1.75;color:#cbd5e1;margin-bottom:9px;}p:last-child{margin-bottom:0;}
 
-/* CAIXAS */
-.cb{border-radius:10px;padding:14px 17px;margin:12px 0;line-height:1.7;font-size:.91rem;}
+.cb{border-radius:10px;padding:14px 17px;margin:12px 0;line-height:1.7;font-size:.92rem;}
 .cb strong{display:block;margin-bottom:4px;}
-.cbp{background:var(--pd);border:1px solid rgba(139,92,246,.3);}.cbp strong{color:#c4b5fd;}
-.cbt{border-left:4px solid var(--grn);background:var(--gd);}.cbt strong{color:#6ee7b7;}
-.cbw{border-left:4px solid var(--amb);background:var(--ad);}.cbw strong{color:#fcd34d;}
-.cbs{background:var(--sd);border:1.5px solid rgba(56,189,248,.3);border-radius:10px;padding:16px 18px;margin:14px 0;}.cbs strong{color:#7dd3fc;}
+.cb-concept{background:var(--pd);border:1px solid rgba(139,92,246,.3);}.cb-concept strong{color:#c4b5fd;}
+.cb-tip{border-left:4px solid var(--green);background:var(--gd);}.cb-tip strong{color:#6ee7b7;}
+.cb-warn{border-left:4px solid var(--amber);background:var(--ad);}.cb-warn strong{color:#fcd34d;}
 
-/* FÓRMULA */
 .fbox{background:rgba(139,92,246,.1);border:1px solid rgba(139,92,246,.3);border-radius:12px;padding:16px;text-align:center;margin:14px 0;}
-.fm{font-family:'Fredoka One',cursive;font-size:1.45rem;color:#ddd6fe;display:block;margin:6px 0;}
-.fl{font-size:.76rem;color:var(--mut);letter-spacing:.04em;}
+.fm{font-family:'Fredoka One',cursive;font-size:1.5rem;color:#ddd6fe;display:block;margin:6px 0;}
+.fl{font-size:.78rem;color:var(--muted);letter-spacing:.04em;}
 
-/* TABELA */
-table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.86rem;}
+table{width:100%;border-collapse:collapse;margin:12px 0;font-size:.87rem;}
 th{background:var(--pd);color:#c4b5fd;font-weight:700;padding:8px 10px;text-align:center;border:1px solid rgba(139,92,246,.2);}
-td{padding:7px 10px;text-align:center;border:1px solid var(--bord);background:rgba(255,255,255,.02);}
+td{padding:7px 10px;text-align:center;border:1px solid var(--border);background:rgba(255,255,255,.02);}
 tr:hover td{background:rgba(255,255,255,.04);}
 .thi{background:rgba(16,185,129,.12)!important;color:#6ee7b7;font-weight:700;}
+.tbd{background:rgba(244,63,94,.10)!important;color:#fda4af;}
 
-/* STEPS */
 .steps{list-style:none;padding:0;}
-.steps li{display:flex;gap:11px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--bord);font-size:.91rem;}
+.steps li{display:flex;gap:11px;align-items:flex-start;padding:8px 0;border-bottom:1px solid var(--border);font-size:.92rem;}
 .steps li:last-child{border-bottom:none;}
-.sn{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--pur);min-width:24px;}
+.sn{font-family:'Fredoka One',cursive;font-size:1rem;color:var(--purple);min-width:24px;}
 
-/* REVEAL */
 .rev{border:1px dashed rgba(139,92,246,.4);border-radius:10px;padding:16px;cursor:pointer;margin:12px 0;transition:border-color .2s;}
-.rev:hover{border-color:var(--pur);}
-.rf{color:var(--mut);text-align:center;font-weight:700;font-size:.91rem;}
+.rev:hover{border-color:var(--purple);}
+.rf{color:var(--muted);text-align:center;font-weight:700;font-size:.91rem;}
 .rb{display:none;}
 .rev.open .rb{display:block;animation:fadeIn .35s;}
 .rev.open .rf{display:none;}
 
-/* BTNS */
-.btn{display:inline-block;font-family:'Fredoka One',cursive;font-size:.93rem;padding:10px 22px;border-radius:9px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;}
+.btn{display:inline-block;font-family:'Fredoka One',cursive;font-size:.95rem;padding:10px 22px;border-radius:9px;border:none;cursor:pointer;transition:all .2s;text-decoration:none;}
 .bp{background:linear-gradient(135deg,#7c3aed,#8b5cf6);color:#fff;}
 .bp:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(139,92,246,.4);}
 .bg{background:linear-gradient(135deg,#059669,#10b981);color:#fff;}
 .bg:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(16,185,129,.4);}
 .nxt{text-align:center;margin-top:20px;}
 
-/* HERO */
-.hero{text-align:center;padding:22px 0 16px;}
-.hero em{font-size:2.8rem;display:block;margin-bottom:9px;animation:pop .6s ease;}
-.hero h1{font-family:'Fredoka One',cursive;font-size:1.85rem;margin-bottom:8px;}
-
-/* TAGS */
-.etag{display:inline-block;background:var(--sd);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:5px;padding:2px 8px;font-size:.68rem;font-weight:800;letter-spacing:.04em;}
-
-/* LAB SLIDERS */
-.slg{margin-bottom:14px;}
-.sll{display:flex;justify-content:space-between;font-size:.82rem;font-weight:700;margin-bottom:5px;}
-.slv{color:var(--pur);font-family:'Fredoka One',cursive;}
-input[type=range]{width:100%;accent-color:var(--pur);cursor:pointer;}
-.rdp{background:var(--pd);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:13px;text-align:center;}
-.rdv{font-family:'Fredoka One',cursive;font-size:1.8rem;color:#ddd6fe;display:block;margin:4px 0;}
-.rdl{font-size:.7rem;color:var(--mut);text-transform:uppercase;letter-spacing:.04em;}
-
-/* GRID COMPARE */
-.cmp{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;}
-@media(max-width:600px){.cmp{grid-template-columns:1fr;}}
-.cc{border-radius:10px;padding:14px;text-align:center;border:1px solid;}
-.cc-p{background:var(--pd);border-color:rgba(139,92,246,.3);}
-.cc-a{background:rgba(56,189,248,.1);border-color:rgba(56,189,248,.3);}
-.cc-c{background:rgba(16,185,129,.1);border-color:rgba(16,185,129,.3);}
-.cc-t{font-family:'Fredoka One',cursive;font-size:1rem;margin-bottom:6px;}
-.cc-p .cc-t{color:#c4b5fd;}.cc-a .cc-t{color:#7dd3fc;}.cc-c .cc-t{color:#6ee7b7;}
-
-/* EXERCÍCIOS */
-.qcard{background:var(--surf);border:1px solid var(--bord);border-radius:14px;padding:24px;margin-bottom:18px;transition:border-color .3s;}
+.qfm{font-family:'Fredoka One',cursive;font-size:1.2rem;color:#ddd6fe;text-align:center;padding:10px;background:rgba(139,92,246,.1);border-radius:8px;margin:10px 0;}
+.qcard{background:var(--surface);border:1px solid var(--border);border-radius:14px;padding:24px;margin-bottom:18px;transition:border-color .3s;}
 .qcard.right{border-color:rgba(16,185,129,.4);}.qcard.wrong{border-color:rgba(244,63,94,.3);}
 .qhdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:13px;}
-.qnum{font-family:'Fredoka One',cursive;font-size:.93rem;color:var(--mut);}
-.qlv{font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:99px;letter-spacing:.04em;}
+.qnum{font-family:'Fredoka One',cursive;font-size:.95rem;color:var(--muted);}
+.qlvl{font-size:.68rem;font-weight:800;padding:2px 9px;border-radius:99px;letter-spacing:.04em;}
 .lvb{background:var(--gd);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
 .lvm{background:var(--ad);color:#fcd34d;border:1px solid rgba(245,158,11,.3);}
 .lvd{background:var(--rd);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
-.qt{font-size:.94rem;line-height:1.8;color:#cbd5e1;margin-bottom:14px;}
+.qt{font-size:.95rem;line-height:1.8;color:#cbd5e1;margin-bottom:14px;}
 .qctx{background:var(--sd);border:1px solid rgba(56,189,248,.2);border-radius:9px;padding:12px 15px;margin-bottom:13px;font-size:.88rem;}
-.qfm{font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ddd6fe;text-align:center;padding:10px;background:rgba(139,92,246,.1);border-radius:8px;margin:10px 0;}
 .opts{display:flex;flex-direction:column;gap:7px;}
-.obt{background:var(--surf);border:1px solid var(--bord);border-radius:9px;padding:11px 15px;cursor:pointer;transition:all .2s;text-align:left;font-family:'Nunito',sans-serif;color:var(--txt);font-size:.9rem;font-weight:600;}
-.obt:hover:not(:disabled){border-color:var(--pur);background:var(--pd);}
+.obt{background:var(--surface);border:1px solid var(--border);border-radius:9px;padding:11px 15px;cursor:pointer;transition:all .2s;text-align:left;font-family:'Nunito',sans-serif;color:var(--text);font-size:.9rem;font-weight:600;}
+.obt:hover:not(:disabled){border-color:var(--purple);background:var(--pd);}
 .obt:disabled{cursor:default;}
-.obt.ok{background:var(--gd)!important;border-color:var(--grn)!important;color:#6ee7b7!important;}
-.obt.no{background:var(--rd)!important;border-color:var(--ros)!important;color:#fda4af!important;}
+.obt.ok{background:var(--gd)!important;border-color:var(--green)!important;color:#6ee7b7!important;}
+.obt.no{background:var(--rd)!important;border-color:var(--rose)!important;color:#fda4af!important;}
 .fb{margin-top:10px;font-weight:700;font-size:.9rem;display:none;padding:8px 12px;border-radius:7px;}
 .fbok{background:var(--gd);color:#6ee7b7;border:1px solid rgba(16,185,129,.3);}
 .fbno{background:var(--rd);color:#fda4af;border:1px solid rgba(244,63,94,.3);}
-.sol{display:none;margin-top:12px;background:rgba(0,0,0,.2);border:1px solid var(--bord);border-radius:9px;padding:14px;font-size:.86rem;line-height:1.8;color:#cbd5e1;}
+.sol{display:none;margin-top:12px;background:rgba(0,0,0,.2);border:1px solid var(--border);border-radius:9px;padding:14px;font-size:.86rem;line-height:1.8;color:#cbd5e1;}
 .sol strong{color:#ddd6fe;}
 .ss{margin:3px 0;padding:5px 9px;background:rgba(139,92,246,.06);border-radius:5px;}
 .qprog{display:flex;gap:5px;margin-bottom:22px;}
-.qp{flex:1;height:6px;border-radius:99px;background:var(--bord);transition:background .4s;}
-.qp.done{background:var(--grn);}.qp.wrong{background:var(--ros);}.qp.cur{background:var(--amb);}
+.qp{flex:1;height:6px;border-radius:99px;background:var(--border);transition:background .4s;}
+.qp.done{background:var(--green);}.qp.wrong{background:var(--rose);}.qp.cur{background:var(--amber);}
 .lhdr{text-align:center;padding:22px 0 16px;}
 .lhdr h1{font-family:'Fredoka One',cursive;font-size:1.75rem;margin-bottom:7px;}
-.lhdr p{color:var(--mut);font-size:.92rem;}
+.lhdr p{color:var(--muted);font-size:.93rem;}
+.done-sec{display:none;text-align:center;padding:44px 16px;animation:pop .5s ease;}
+.done-sec h2{font-family:'Fredoka One',cursive;font-size:1.9rem;margin-bottom:9px;}
+.fsc{font-family:'Fredoka One',cursive;font-size:2.6rem;color:var(--amber);margin:16px 0;}
 
-/* COMPLETION */
-.done{display:none;text-align:center;padding:44px 16px;animation:pop .5s ease;}
-.done h2{font-family:'Fredoka One',cursive;font-size:1.85rem;margin-bottom:9px;}
-.fsc{font-family:'Fredoka One',cursive;font-size:2.6rem;color:var(--amb);margin:16px 0;}
+.etag{display:inline-block;background:var(--sd);color:var(--sky);border:1px solid rgba(56,189,248,.3);border-radius:5px;padding:2px 8px;font-size:.68rem;font-weight:800;letter-spacing:.04em;}
+.badge{display:inline-block;background:var(--ad);color:var(--amber);border:1px solid rgba(245,158,11,.3);border-radius:7px;padding:2px 9px;font-size:.72rem;font-weight:800;}
 
-/* FLOATING PTS */
-.fpt{position:fixed;font-family:'Fredoka One',cursive;color:var(--amb);font-size:1.35rem;animation:floatUp 1.2s ease-out forwards;pointer-events:none;z-index:999;}
+.fpt{position:fixed;font-family:'Fredoka One',cursive;color:var(--amber);font-size:1.35rem;animation:floatUp 1.2s ease-out forwards;pointer-events:none;z-index:999;}
 
-/* TREE LAB */
-.tree-node{
-  display:inline-flex;align-items:center;justify-content:center;
-  width:42px;height:42px;border-radius:50%;
-  font-family:'Fredoka One',cursive;font-size:.82rem;cursor:pointer;
-  border:2px solid;transition:all .3s;user-select:none;
-}
-.tn-root{background:rgba(139,92,246,.3);border-color:var(--pur);color:#ddd6fe;}
-.tn-l1{background:rgba(56,189,248,.2);border-color:var(--sky);color:#7dd3fc;}
-.tn-l2{background:rgba(16,185,129,.2);border-color:var(--grn);color:#6ee7b7;}
-.tn-l3{background:rgba(245,158,11,.2);border-color:var(--amb);color:#fcd34d;}
-.tn-used{opacity:.3;cursor:not-allowed;}
-.tn-sel{transform:scale(1.15);box-shadow:0 0 14px rgba(139,92,246,.6);}
-.tree-path{font-family:'Fredoka One',cursive;font-size:1rem;color:#ddd6fe;margin:4px 0;}
-.tree-count{font-family:'Fredoka One',cursive;font-size:2rem;color:var(--amb);}
+.hero{text-align:center;padding:24px 0 18px;}
+.hero em{font-size:2.8rem;display:block;margin-bottom:9px;animation:pop .6s ease;}
+.hero h1{font-family:'Fredoka One',cursive;font-size:1.9rem;margin-bottom:8px;}
 
-/* FATORIAL VIZ */
-.fact-chain{display:flex;align-items:center;gap:6px;flex-wrap:wrap;margin:10px 0;}
-.fc-box{background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);border-radius:8px;padding:6px 12px;font-family:'Fredoka One',cursive;font-size:1.1rem;color:#ddd6fe;transition:all .3s;}
-.fc-box.hi{background:rgba(245,158,11,.25);border-color:var(--amb);color:#fcd34d;transform:scale(1.1);}
-.fc-op{color:var(--mut);font-weight:700;font-size:1rem;}
+/* GRADE 3 PASSOS */
+.p3{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin:14px 0;}
+@media(max-width:580px){.p3{grid-template-columns:1fr;}}
+.p3c{background:var(--pd);border:1px solid rgba(139,92,246,.3);border-radius:10px;padding:14px;text-align:center;}
+.p3n{font-family:'Fredoka One',cursive;font-size:1.8rem;color:#a78bfa;display:block;margin-bottom:4px;}
+.p3t{font-weight:800;color:#ddd6fe;font-size:.9rem;}
+.p3d{font-size:.82rem;color:var(--muted);margin-top:5px;line-height:1.65;}
 
-/* ANIM */
 @keyframes fadeIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
 @keyframes pop{0%{transform:scale(.8);opacity:0}60%{transform:scale(1.05)}100%{transform:scale(1);opacity:1}}
 @keyframes floatUp{0%{opacity:1;transform:translateY(0)}100%{opacity:0;transform:translateY(-70px)}}
 @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
 @keyframes confetti{0%{transform:translateY(0) rotate(0)}100%{transform:translateY(100vh) rotate(720deg);opacity:0}}
-@keyframes popIn{0%{transform:scale(0);opacity:0}60%{transform:scale(1.2)}100%{transform:scale(1);opacity:1}}
 </style>
 </head>
 <body>
 
-<header class="sh">
-  <div class="hd">
-    <div class="logo">🎲 Análise Combinatória</div>
+<header class="sticky-header">
+  <div class="hdr">
+    <div class="logo">📐 Função do 2º Grau · Aulas 3 e 4</div>
     <div class="pw">
-      <div class="pl" id="progLbl">Seção 1 de 8</div>
+      <div class="pl" id="progLbl">Seção 1 de 4</div>
       <div class="pb"><div class="pbi" id="progBar"></div></div>
     </div>
     <div class="sc">⭐ <span id="scoreDisp">0</span> pts</div>
   </div>
 </header>
 
-<nav class="tnav">
-  <button class="tab active" onclick="go('a1',0,this)">📘 Aula 1 · PFC</button>
-  <button class="tab xt"     onclick="go('e1',1,this)">✏️ Ex. 1</button>
-  <button class="tab"        onclick="go('a2',2,this)">📘 Aula 2 · Fatorial & P</button>
-  <button class="tab xt"     onclick="go('e2',3,this)">✏️ Ex. 2</button>
-  <button class="tab"        onclick="go('a3',4,this)">📘 Aula 3 · Arranjo</button>
-  <button class="tab xt"     onclick="go('e3',5,this)">✏️ Ex. 3</button>
-  <button class="tab"        onclick="go('a4',6,this)">📘 Aula 4 · Combinação</button>
-  <button class="tab xt"     onclick="go('e4',7,this)">✏️ Ex. 4</button>
+<nav class="tabs">
+  <button class="tab active" onclick="go('a3',0,this)">📘 Aula 3 · Coeficiente c</button>
+  <button class="tab xt"     onclick="go('e3',1,this)">✏️ Exercícios 3</button>
+  <button class="tab"        onclick="go('a4',2,this)">📘 Aula 4 · Ler o Gráfico</button>
+  <button class="tab xt"     onclick="go('e4',3,this)">✏️ Exercícios 4</button>
 </nav>
 
 <main>
-<div class="ps-row" style="margin-top:16px">
-  <div class="ps cur" id="ps0"></div><div class="ps" id="ps1"></div>
-  <div class="ps" id="ps2"></div><div class="ps" id="ps3"></div>
-  <div class="ps" id="ps4"></div><div class="ps" id="ps5"></div>
-  <div class="ps" id="ps6"></div><div class="ps" id="ps7"></div>
+<div class="psteps" style="margin-top:16px">
+  <div class="ps cur" id="ps0"></div>
+  <div class="ps" id="ps1"></div>
+  <div class="ps" id="ps2"></div>
+  <div class="ps" id="ps3"></div>
 </div>
 
-<!-- ════════════════════════════════════════
-     AULA 1 — PFC (Princípio Fundamental da Contagem)
-════════════════════════════════════════ -->
-<section class="sec active" id="a1">
+<!-- ═══════════════════════════════════════════════
+     AULA 3 — Coeficiente c: o valor inicial
+═══════════════════════════════════════════════ -->
+<section class="sec active" id="a3">
   <div class="hero">
-    <em>🌳</em>
-    <h1>Princípio Fundamental da Contagem</h1>
-    <p>Antes de contar tudo, aprenda a multiplicar escolhas. É mais simples do que parece.</p>
+    <em>🏁</em>
+    <h1>O coeficiente <em>c</em>: onde tudo começa</h1>
+    <p>Antes de qualquer dinâmica, toda situação tem um ponto de partida. Esse ponto é o <strong>coeficiente c</strong>.</p>
   </div>
-  <div style="margin-bottom:14px"><span class="etag">H1</span><span class="etag" style="margin-left:6px">H2</span><span class="etag" style="margin-left:6px">H3</span></div>
+  <div style="margin-bottom:14px">
+    <span class="etag">H15</span>
+    <span class="etag" style="margin-left:6px">H19</span>
+    <span class="badge" style="margin-left:6px">Valor Inicial · f(0)</span>
+  </div>
 
+  <!-- CONCEITO -->
   <div class="card">
     <div class="cl lp">🧠 Conceito</div>
-    <h2>O Princípio Multiplicativo</h2>
-    <p>Se uma tarefa pode ser realizada em <strong>k etapas independentes</strong>, sendo n₁ as formas de realizar a 1ª etapa, n₂ a 2ª, ..., o número total de maneiras é:</p>
+    <h2>O que é o coeficiente c?</h2>
+    <p>Em <strong>f(x) = ax² + bx + c</strong>, o coeficiente c é o <em>termo independente</em> — aquele que não multiplica nenhuma potência de x. Para saber o que ele representa geometricamente, basta substituir x = 0:</p>
     <div class="fbox">
-      <span class="fm">Total = n₁ × n₂ × n₃ × … × nₖ</span>
-      <span class="fl">Cada etapa é independente das demais</span>
+      <span class="fm">f(0) = a·0² + b·0 + c = c</span>
+      <span class="fl">Os termos com x somem e sobra apenas c</span>
     </div>
-    <div class="cbt" style="margin-bottom:14px"><strong>💡 A intuição</strong>Para cada escolha da primeira etapa, você tem todas as opções da segunda etapa. Para cada combinação dessas duas, você tem todas as da terceira. Por isso se multiplica — não se soma.</div>
-    <div class="cbw"><strong>⚠️ Quando NÃO usar o PFC</strong>O PFC assume que cada etapa é independente e que as opções não se excluem. Se uma escolha elimina opções em outra etapa (ex: não pode repetir letras, não pode usar a mesma pessoa em dois cargos), é preciso atenção redobrada na contagem de cada etapa.</div>
+    <p>Isso significa que <strong>c é sempre o valor da função quando x = 0</strong>. Geometricamente, é o ponto exato onde a parábola cruza o eixo y.</p>
+    <div class="cb cb-tip" style="margin-bottom:14px">
+      <strong>💡 Como memorizar</strong>
+      x = 0 representa o instante inicial: dia zero, hora zero, posição de partida. Nesse momento a função vale exatamente c. Por isso, c é sempre o <em>valor inicial</em> da situação modelada.
+    </div>
+    <div class="cb cb-warn">
+      <strong>⚠️ Confusão clássica no ENEM</strong>
+      c <strong>não é o máximo</strong>, nem a média, nem o valor final. É exclusivamente o f(0) — o valor quando x = 0. Se uma questão perguntar "qual era o estoque no início?" e você ver uma expressão do tipo ax² + bx + c, a resposta é diretamente c.
+    </div>
   </div>
 
+  <!-- MOTIVAÇÃO -->
   <div class="card">
-    <div class="cl la">⚡ Exemplo motivador</div>
-    <h2>O Problema do Cardápio</h2>
-    <p>Um restaurante oferece: <strong>3 entradas</strong>, <strong>4 pratos principais</strong> e <strong>2 sobremesas</strong>. Quantos menus diferentes (1 de cada) são possíveis?</p>
+    <div class="cl la">⚡ Situação motivadora</div>
+    <h2>Campanha de vacinação</h2>
+    <p>Uma farmácia registrou que seu estoque <em>E</em> de vacinas (doses) em função dos dias <em>d</em> segue:</p>
+    <div class="qfm">E(d) = −3d² + 6d + 120</div>
+    <p>Qual era o estoque no dia <strong>d = 0</strong> (início da campanha)?</p>
     <ul class="steps">
-      <li><span class="sn">1</span><span>Etapa 1 — Escolha de entrada: 3 opções</span></li>
-      <li><span class="sn">2</span><span>Etapa 2 — Escolha de prato: 4 opções (independente da entrada)</span></li>
-      <li><span class="sn">3</span><span>Etapa 3 — Escolha de sobremesa: 2 opções (independente das anteriores)</span></li>
-      <li><span class="sn">✓</span><span>Total = 3 × 4 × 2 = <strong style="color:#fcd34d">24 menus diferentes</strong></span></li>
+      <li><span class="sn">1</span><span>Substituir d = 0 na expressão: E(0) = −3·(0)² + 6·(0) + 120</span></li>
+      <li><span class="sn">2</span><span>Os termos com d viram zero: E(0) = 0 + 0 + 120</span></li>
+      <li><span class="sn">3</span><span>Resta apenas o coeficiente c: <strong style="color:#fcd34d">E(0) = 120 doses</strong></span></li>
     </ul>
-    <div class="cbt"><strong>✓ Visualize assim</strong>Cada "caminho" na árvore de possibilidades é um menu diferente. A árvore tem 3 × 4 × 2 = 24 folhas — cada folha é um menu único.</div>
+    <div class="cb cb-concept">
+      <strong>✓ Conclusão</strong>
+      c = 120 é o estoque inicial — o valor antes de qualquer distribuição. Isso não é coincidência: ocorre com qualquer função do 2º grau, independente dos valores de a e b.
+    </div>
   </div>
 
+  <!-- C NO GRÁFICO -->
   <div class="card">
-    <div class="cl lg">🔬 Laboratório — Árvore de Possibilidades</div>
-    <h2>Monte sua própria árvore</h2>
-    <p>Clique nos nós para percorrer os caminhos e construir a árvore interativamente. Cada caminho completo é uma possibilidade distinta.</p>
-
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:14px">
-      <div>
-        <div class="slg">
-          <div class="sll"><span>Opções etapa 1</span><span class="slv" id="vn1">3</span></div>
-          <input type="range" id="sn1" min="2" max="4" step="1" value="3" oninput="buildTree()">
-        </div>
-        <div class="slg">
-          <div class="sll"><span>Opções etapa 2</span><span class="slv" id="vn2">3</span></div>
-          <input type="range" id="sn2" min="2" max="4" step="1" value="3" oninput="buildTree()">
-        </div>
-        <div class="slg">
-          <div class="sll"><span>Opções etapa 3</span><span class="slv" id="vn3">2</span></div>
-          <input type="range" id="sn3" min="1" max="4" step="1" value="2" oninput="buildTree()">
-        </div>
-        <div class="rdp" style="margin-top:10px">
-          <span class="rdl">Total de possibilidades</span>
-          <span class="rdv" id="treeTotal">18</span>
-          <span class="rdl" id="treeMult">3 × 3 × 2</span>
-        </div>
-      </div>
-      <div>
-        <svg id="treeSvg" viewBox="0 0 280 280" style="width:100%;border-radius:10px;background:rgba(0,0,0,.2)"></svg>
-      </div>
-    </div>
-    <div style="text-align:center;margin-top:12px">
-      <span id="treeMsg" style="font-family:'Fredoka One',cursive;font-size:.9rem;color:var(--mut)">Ajuste os sliders para ver a árvore crescer</span>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="cl la">⚡ Exemplos com restrições</div>
-    <ul class="steps">
-      <li><span class="sn">Ex1</span><span><strong>Placas de carro (3 letras + 4 dígitos, sem repetição de letra):</strong><br>Letras: 26 × 25 × 24 · Dígitos: 10 × 10 × 10 × 10 → Total = 26×25×24×10⁴</span></li>
-      <li><span class="sn">Ex2</span><span><strong>Senha de 4 dígitos sem repetição, começando com número par:</strong><br>1ª posição (par): 5 opções (0,2,4,6,8) · 2ª: 9 · 3ª: 8 · 4ª: 7 → 5×9×8×7 = 2.520</span></li>
-    </ul>
-    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_1')">
-      <div class="rf">💭 Um vestiário tem 5 chaves. Uma pessoa vai embaralhá-las e dar uma a cada um de 5 atletas. Quantas distribuições são possíveis? (clique)</div>
-      <div class="rb">
-        <p>1ª chave: 5 opções · 2ª chave: 4 · 3ª: 3 · 4ª: 2 · 5ª: 1</p>
-        <p>Total = 5 × 4 × 3 × 2 × 1 = <strong style="color:#fcd34d">120 distribuições</strong></p>
-        <div class="cbt" style="margin-top:8px"><strong>Esse resultado tem nome: é o fatorial de 5!</strong> Na próxima aula você vai ver por que isso acontece e qual a fórmula geral.</div>
-      </div>
-    </div>
-  </div>
-
-  <div class="nxt"><button class="btn bp" onclick="goEx('e1',1)">✏️ Exercícios da Aula 1 →</button></div>
-</section>
-
-<!-- ════════════════════════════════════════
-     EXERCÍCIOS 1 — PFC
-════════════════════════════════════════ -->
-<section class="sec" id="e1">
-  <div class="lhdr"><h1>✏️ Exercícios — PFC</h1><p>Princípio multiplicativo, árvore de possibilidades e restrições.</p><div style="margin-top:8px"><span class="etag">H1</span><span class="etag" style="margin-left:5px">H2</span></div></div>
-  <div class="qprog"><div class="qp cur" id="e1p1"></div><div class="qp" id="e1p2"></div><div class="qp" id="e1p3"></div><div class="qp" id="e1p4"></div></div>
-
-  <div class="qcard" id="e1q1">
-    <div class="qhdr"><span class="qnum">Questão 1 de 4</span><span class="qlv lvb">Básico</span></div>
-    <p class="qt">Uma lanchonete oferece sanduíches com as seguintes opções: 3 tipos de pão, 4 tipos de recheio e 2 tipos de molho. Quantos sanduíches diferentes podem ser montados escolhendo um de cada?</p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e1',1,'A','C')">A) 9</button>
-      <button class="obt" onclick="exC('e1',1,'B','C')">B) 18</button>
-      <button class="obt" onclick="exC('e1',1,'C','C')">C) 24</button>
-      <button class="obt" onclick="exC('e1',1,'D','C')">D) 36</button>
-      <button class="obt" onclick="exC('e1',1,'E','C')">E) 48</button>
-    </div>
-    <div class="fb" id="e1f1"></div>
-    <div class="sol" id="e1s1"><div class="ss">PFC: 3 × 4 × 2 = <strong>24 sanduíches</strong></div><div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div></div>
-  </div>
-
-  <div class="qcard" id="e1q2">
-    <div class="qhdr"><span class="qnum">Questão 2 de 4</span><span class="qlv lvb">Básico</span></div>
-    <div class="qctx">🎽 Uma loja de uniformes esportivos oferece camisas em 4 cores e calções em 3 cores diferentes das camisas.</div>
-    <p class="qt">Quantos uniformes completos (camisa + calção) diferentes podem ser formados, sabendo que a cor da camisa deve ser diferente da cor do calção?</p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e1',2,'A','C')">A) 7</button>
-      <button class="obt" onclick="exC('e1',2,'B','C')">B) 9</button>
-      <button class="obt" onclick="exC('e1',2,'C','C')">C) 12</button>
-      <button class="obt" onclick="exC('e1',2,'D','C')">D) 16</button>
-      <button class="obt" onclick="exC('e1',2,'E','C')">E) 24</button>
-    </div>
-    <div class="fb" id="e1f2"></div>
-    <div class="sol" id="e1s2"><div class="ss">Camisa: 4 opções. Calção deve ser de cor diferente: 3 opções restantes.</div><div class="ss">Total = 4 × 3 = <strong>12 uniformes</strong></div><div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div></div>
-  </div>
-
-  <div class="qcard" id="e1q3">
-    <div class="qhdr"><span class="qnum">Questão 3 de 4</span><span class="qlv lvm">Médio</span></div>
-    <div class="qctx">🔐 Um sistema de senha digital usa 4 dígitos (0–9). A senha deve iniciar com um dígito ímpar e os dígitos não podem se repetir.</div>
-    <p class="qt">Quantas senhas diferentes satisfazem essas condições?</p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e1',3,'A','D')">A) 2.016</button>
-      <button class="obt" onclick="exC('e1',3,'B','D')">B) 2.520</button>
-      <button class="obt" onclick="exC('e1',3,'C','D')">C) 3.024</button>
-      <button class="obt" onclick="exC('e1',3,'D','D')">D) 2.520</button>
-      <button class="obt" onclick="exC('e1',3,'E','D')">E) 4.536</button>
-    </div>
-    <div class="fb" id="e1f3"></div>
-    <div class="sol" id="e1s3">
-      <div class="ss">1ª posição (ímpar, sem rep.): 5 opções (1,3,5,7,9)</div>
-      <div class="ss">2ª posição: 9 dígitos restantes (0–9 menos o 1º escolhido)</div>
-      <div class="ss">3ª posição: 8 dígitos restantes · 4ª posição: 7 dígitos restantes</div>
-      <div class="ss">Total = 5 × 9 × 8 × 7 = <strong>2.520 senhas</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong></div>
-    </div>
-  </div>
-
-  <div class="qcard" id="e1q4">
-    <div class="qhdr"><span class="qnum">Questão 4 de 4</span><span class="qlv lvd">Difícil — Padrão ENEM</span></div>
-    <div class="qctx">🚌 (ENEM adaptada) Uma empresa de turismo oferece pacotes de viagem combinando: 3 destinos no Norte do Brasil, 4 opções de meios de transporte e 5 categorias de hotel. Um cliente quer montar um pacote com 1 destino, 1 transporte e 1 hotel, mas sabe que para 2 dos 3 destinos apenas 3 das 5 categorias de hotel estão disponíveis.</div>
-    <p class="qt">Quantos pacotes diferentes esse cliente pode montar?</p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e1',4,'A','B')">A) 56</button>
-      <button class="obt" onclick="exC('e1',4,'B','B')">B) 44</button>
-      <button class="obt" onclick="exC('e1',4,'C','B')">C) 60</button>
-      <button class="obt" onclick="exC('e1',4,'D','B')">D) 48</button>
-      <button class="obt" onclick="exC('e1',4,'E','B')">E) 72</button>
-    </div>
-    <div class="fb" id="e1f4"></div>
-    <div class="sol" id="e1s4">
-      <div class="ss">Destino 1 (hotéis completos): 1 × 4 × 5 = 20 pacotes</div>
-      <div class="ss">Destinos 2 e 3 (só 3 categorias de hotel): 2 × 4 × 3 = 24 pacotes</div>
-      <div class="ss">Total = 20 + 24 = <strong>44 pacotes</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>B</strong></div>
-    </div>
-  </div>
-
-  <div class="done" id="e1done">
-    <span style="font-size:3.5rem;display:block;margin-bottom:12px">🎉</span>
-    <h2>Exercícios 1 concluídos!</h2>
-    <div class="fsc">⭐ <span id="e1sc">0</span> pts</div>
-    <p id="e1msg" style="color:#cbd5e1;max-width:380px;margin:0 auto 18px"></p>
-    <button class="btn bp" style="margin:5px" onclick="resetEx('e1')">🔄 Repetir</button>
-    <button class="btn bg" style="margin:5px" onclick="go('a2',2,document.querySelectorAll('.tab')[2])">Aula 2 →</button>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════
-     AULA 2 — Fatorial e Permutação Simples
-════════════════════════════════════════ -->
-<section class="sec" id="a2">
-  <div class="hero">
-    <em>🔢</em>
-    <h1>Fatorial e Permutação Simples</h1>
-    <p>Quando a <strong>ordem importa</strong> e usamos <strong>todos os elementos</strong>, entra em cena a permutação.</p>
-  </div>
-
-  <div class="card">
-    <div class="cl lp">🧠 Fatorial — o produto que cresce rápido</div>
-    <h2>O que é n! ?</h2>
-    <p>O <strong>fatorial de n</strong> (escrito n!) é o produto de todos os inteiros positivos de 1 até n:</p>
-    <div class="fbox">
-      <span class="fm">n! = n × (n−1) × (n−2) × … × 2 × 1</span>
-      <span class="fl">Por definição: 0! = 1</span>
-    </div>
+    <div class="cl lg">🔬 c no gráfico — regra visual</div>
+    <h2>Onde a parábola cruza o eixo y</h2>
+    <p>O valor de c desloca a parábola inteira para cima ou para baixo, sem alterar sua forma nem sua abertura. Apenas o ponto de cruzamento com o eixo y muda.</p>
     <table>
-      <tr><th>n</th><th>1</th><th>2</th><th>3</th><th>4</th><th>5</th><th>6</th><th>7</th></tr>
-      <tr><td>n!</td><td>1</td><td>2</td><td>6</td><td>24</td><td>120</td><td>720</td><td class="thi">5.040</td></tr>
+      <tr><th>Sinal de c</th><th>Cruzamento com eixo y</th><th>Exemplo</th></tr>
+      <tr><td style="color:#6ee7b7"><strong>c &gt; 0</strong></td><td>Acima da origem</td><td>f(x) = x² − 4x + <strong>3</strong> → cruza em y = 3</td></tr>
+      <tr class="thi"><td><strong>c = 0</strong></td><td>Na origem (0, 0)</td><td>g(x) = 2x² − 5x → passa pela origem</td></tr>
+      <tr><td style="color:#fda4af"><strong>c &lt; 0</strong></td><td>Abaixo da origem</td><td>h(x) = −x² + 2x − <strong>4</strong> → cruza em y = −4</td></tr>
     </table>
-    <div class="cbw"><strong>⚠️ Fatorial cresce absurdamente rápido!</strong>10! = 3.628.800 e 20! ≈ 2,4 × 10¹⁸. O ENEM nunca pede o cálculo de fatoriais grandes — sempre há simplificação antes de resolver.</div>
-  </div>
-
-  <div class="card">
-    <div class="cl lg">🔬 Calculadora de Fatorial — visualize a multiplicação</div>
-    <h2>Veja cada multiplicação acontecer</h2>
-    <div style="display:flex;align-items:center;gap:14px;margin-bottom:14px;flex-wrap:wrap">
-      <div class="slg" style="flex:1;min-width:180px;margin:0">
-        <div class="sll"><span>n =</span><span class="slv" id="vfat">5</span></div>
-        <input type="range" id="sfat" min="1" max="9" step="1" value="5" oninput="updateFat()">
-      </div>
-      <div class="rdp" style="min-width:140px;padding:10px 16px">
-        <span class="rdl"><span id="vfat2">5</span>!</span>
-        <span class="rdv" id="fatResult">120</span>
-      </div>
-    </div>
-    <div class="fact-chain" id="fatChain"></div>
-    <p style="font-size:.82rem;color:var(--mut);margin-top:6px">Cada caixa destacada representa o número sendo multiplicado no passo atual.</p>
-  </div>
-
-  <div class="card">
-    <div class="cl lp">🧠 Permutação Simples</div>
-    <h2>Quando ordem importa e usa-se tudo</h2>
-    <p>A <strong>permutação simples</strong> conta de quantas maneiras distintas podemos ordenar <em>n</em> elementos diferentes, usando <strong>todos</strong> eles:</p>
-    <div class="fbox">
-      <span class="fm">Pₙ = n!</span>
-      <span class="fl">n = total de elementos · todos são usados · ordem importa</span>
-    </div>
-    <div class="cbt" style="margin-bottom:14px"><strong>💡 Por que é igual a n! ?</strong>Para o 1º lugar: n escolhas. Para o 2º: n−1. Para o 3º: n−2. ... Para o último: 1 escolha. Pelo PFC: n × (n−1) × … × 1 = n!</div>
-    <div class="cbw"><strong>⚠️ Ordem importa ou não?</strong>AB e BA são a MESMA dupla de pessoas (combinação) mas ESCALAÇÕES diferentes (permutação). A pergunta-chave: trocar a posição de dois elementos gera um resultado diferente? Se sim, use permutação ou arranjo.</div>
-  </div>
-
-  <div class="card">
-    <div class="cl lg">🔬 Visualizador de Permutações</div>
-    <h2>Embaralhe e conte</h2>
-    <p>Veja todas as permutações possíveis de um conjunto de elementos. Clique em "Embaralhar" para ver uma nova ordem.</p>
-    <div style="display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-bottom:14px">
-      <div class="slg" style="flex:1;min-width:160px;margin:0">
-        <div class="sll"><span>Elementos (n)</span><span class="slv" id="vperm">4</span></div>
-        <input type="range" id="sperm" min="2" max="6" step="1" value="4" oninput="updatePerm()">
-      </div>
-      <button class="btn bp" onclick="shufflePerm()" style="padding:9px 18px">🔀 Embaralhar</button>
-    </div>
-    <div id="permDisplay" style="display:flex;gap:10px;flex-wrap:wrap;margin-bottom:14px;min-height:60px;align-items:center"></div>
-    <div class="rdp">
-      <span class="rdl">Total de permutações: P<sub><span id="vperm2">4</span></sub> =</span>
-      <span class="rdv" id="permResult">24</span>
-      <span class="rdl" id="permCalc">4! = 4×3×2×1</span>
+    <div class="cb cb-tip">
+      <strong>💡 Leia diretamente</strong>
+      Numa questão ENEM com parábola desenhada, para saber o sinal de c basta olhar onde ela cruza o eixo y: acima → c &gt; 0 · na origem → c = 0 · abaixo → c &lt; 0. Sem cálculo nenhum.
     </div>
   </div>
 
+  <!-- EXEMPLOS RESOLVIDOS -->
   <div class="card">
     <div class="cl la">⚡ Exemplos Resolvidos</div>
+    <h2>Identificando c em contextos reais</h2>
     <ul class="steps">
-      <li><span class="sn">Ex1</span><span><strong>Anagramas de AMOR:</strong> 4 letras distintas → P₄ = 4! = 24 anagramas</span></li>
-      <li><span class="sn">Ex2</span><span><strong>Fila de 6 pessoas:</strong> P₆ = 6! = 720 filas diferentes</span></li>
-      <li><span class="sn">Ex3</span><span><strong>Agenda de 5 reuniões em 5 horários:</strong> P₅ = 5! = 120 agendas</span></li>
+      <li><span class="sn">a</span><span><strong>f(x) = 2x² − 5x + 7</strong><br>c = 7 → f(0) = 7. Se x for o tempo em dias, a situação começa com valor 7.</span></li>
+      <li><span class="sn">b</span><span><strong>g(x) = −x² + 4x</strong><br>Não há termo independente → c = 0 → g(0) = 0. A parábola passa pela origem.</span></li>
+      <li><span class="sn">c</span><span><strong>Saldo F(m) = −2m² + 8m + 5.000</strong><br>c = 5.000 → F(0) = R$ 5.000,00. Esse é o depósito inicial antes de qualquer movimentação.</span></li>
+      <li><span class="sn">d</span><span><strong>Audiência A(d) = −d² + 6d + 4</strong><br>c = 4 → A(0) = 4 centenas. Era a audiência base antes da campanha começar.</span></li>
     </ul>
-    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_2')">
-      <div class="rf">💭 De quantas formas 7 livros distintos podem ser organizados em uma prateleira? (clique)</div>
-      <div class="rb"><p>P₇ = 7! = 7×6×5×4×3×2×1 = <strong style="color:#fcd34d">5.040 organizações</strong></p></div>
-    </div>
-    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_3')">
-      <div class="rf">💭 Um grupo de 8 candidatos disputa 8 cargos distintos (1 por candidato). Quantas distribuições são possíveis? (clique)</div>
-      <div class="rb"><p>P₈ = 8! = 40.320 distribuições. Cada distribuição é uma ordenação diferente dos candidatos nos cargos.</p></div>
-    </div>
-  </div>
-
-  <div class="nxt"><button class="btn bp" onclick="goEx('e2',3)">✏️ Exercícios da Aula 2 →</button></div>
-</section>
-
-<!-- ════════════════════════════════════════
-     EXERCÍCIOS 2 — Fatorial e Permutação
-════════════════════════════════════════ -->
-<section class="sec" id="e2">
-  <div class="lhdr"><h1>✏️ Exercícios — Fatorial & Permutação</h1><p>Cálculo de fatorial, permutação simples e anagramas.</p></div>
-  <div class="qprog"><div class="qp cur" id="e2p1"></div><div class="qp" id="e2p2"></div><div class="qp" id="e2p3"></div><div class="qp" id="e2p4"></div></div>
-
-  <div class="qcard" id="e2q1">
-    <div class="qhdr"><span class="qnum">Questão 1 de 4</span><span class="qlv lvb">Básico</span></div>
-    <p class="qt">Qual o valor de <strong>7! / 5!</strong>?</p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e2',1,'A','D')">A) 2</button>
-      <button class="obt" onclick="exC('e2',1,'B','D')">B) 14</button>
-      <button class="obt" onclick="exC('e2',1,'C','D')">C) 21</button>
-      <button class="obt" onclick="exC('e2',1,'D','D')">D) 42</button>
-      <button class="obt" onclick="exC('e2',1,'E','D')">E) 84</button>
-    </div>
-    <div class="fb" id="e2f1"></div>
-    <div class="sol" id="e2s1">
-      <div class="ss">7! / 5! = (7×6×5!) / 5! = 7×6 = <strong>42</strong></div>
-      <div class="ss">Dica: sempre simplifique cancelando os fatoriais antes de calcular.</div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong></div>
-    </div>
-  </div>
-
-  <div class="qcard" id="e2q2">
-    <div class="qhdr"><span class="qnum">Questão 2 de 4</span><span class="qlv lvb">Básico</span></div>
-    <p class="qt">Quantos anagramas (embaralhamentos) existem para a palavra <strong>PALCO</strong>?</p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e2',2,'A','C')">A) 24</button>
-      <button class="obt" onclick="exC('e2',2,'B','C')">B) 60</button>
-      <button class="obt" onclick="exC('e2',2,'C','C')">C) 120</button>
-      <button class="obt" onclick="exC('e2',2,'D','C')">D) 240</button>
-      <button class="obt" onclick="exC('e2',2,'E','C')">E) 720</button>
-    </div>
-    <div class="fb" id="e2f2"></div>
-    <div class="sol" id="e2s2"><div class="ss">PALCO tem 5 letras distintas → P₅ = 5! = 120 anagramas</div><div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div></div>
-  </div>
-
-  <div class="qcard" id="e2q3">
-    <div class="qhdr"><span class="qnum">Questão 3 de 4</span><span class="qlv lvm">Médio</span></div>
-    <div class="qctx">🏆 Uma competição de natação tem 6 finalistas. Quantas formas distintas o pódio (1º, 2º e 3º lugares) pode ser preenchido?</div>
-    <p class="qt"><em>Atenção: apenas os 3 primeiros colocados sobem ao pódio, e a ordem (ouro/prata/bronze) importa.</em></p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e2',3,'A','C')">A) 18</button>
-      <button class="obt" onclick="exC('e2',3,'B','C')">B) 60</button>
-      <button class="obt" onclick="exC('e2',3,'C','C')">C) 120</button>
-      <button class="obt" onclick="exC('e2',3,'D','C')">D) 360</button>
-      <button class="obt" onclick="exC('e2',3,'E','C')">E) 720</button>
-    </div>
-    <div class="fb" id="e2f3"></div>
-    <div class="sol" id="e2s3">
-      <div class="ss">Não usa todos os elementos (6 nadadores, só 3 no pódio) → isso é Arranjo, não Permutação.</div>
-      <div class="ss">A₆,₃ = 6!/(6−3)! = 6!/3! = 6×5×4 = <strong>120</strong></div>
-      <div class="ss" style="color:#fcd34d">⚡ Antecipação: a Aula 3 vai formalizar isso como Arranjo!</div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div>
-    </div>
-  </div>
-
-  <div class="qcard" id="e2q4">
-    <div class="qhdr"><span class="qnum">Questão 4 de 4</span><span class="qlv lvd">Difícil — Padrão ENEM</span></div>
-    <div class="qctx">📚 (ENEM adaptada) Uma bibliotecária precisa organizar 8 livros de Literatura e 4 de Matemática em uma prateleira. Os livros de cada área devem ficar juntos. Quantas organizações distintas são possíveis?</div>
-    <p class="qt"><em>Dica: trate cada bloco de livros como uma "unidade" e aplique PFC.</em></p>
-    <div class="opts">
-      <button class="obt" onclick="exC('e2',4,'A','D')">A) 8! × 4!</button>
-      <button class="obt" onclick="exC('e2',4,'B','D')">B) 12!</button>
-      <button class="obt" onclick="exC('e2',4,'C','D')">C) 2 × 8! × 4!</button>
-      <button class="obt" onclick="exC('e2',4,'D','D')">D) 2 × 8! × 4!</button>
-      <button class="obt" onclick="exC('e2',4,'E','D')">E) 4 × 8!</button>
-    </div>
-    <div class="fb" id="e2f4"></div>
-    <div class="sol" id="e2s4">
-      <div class="ss">Passo 1: Tratar os 2 blocos (Literatura e Matemática) como unidades. 2 blocos → P₂ = 2! = 2 arranjos dos blocos.</div>
-      <div class="ss">Passo 2: Dentro do bloco de Literatura: P₈ = 8! organizações.</div>
-      <div class="ss">Passo 3: Dentro do bloco de Matemática: P₄ = 4! organizações.</div>
-      <div class="ss">Total = 2! × 8! × 4! = <strong>2 × 40.320 × 24 = 1.935.360</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong> (2 × 8! × 4!)</div>
-    </div>
-  </div>
-
-  <div class="done" id="e2done">
-    <span style="font-size:3.5rem;display:block;margin-bottom:12px">🎉</span>
-    <h2>Exercícios 2 concluídos!</h2>
-    <div class="fsc">⭐ <span id="e2sc">0</span> pts</div>
-    <p id="e2msg" style="color:#cbd5e1;max-width:380px;margin:0 auto 18px"></p>
-    <button class="btn bp" style="margin:5px" onclick="resetEx('e2')">🔄 Repetir</button>
-    <button class="btn bg" style="margin:5px" onclick="go('a3',4,document.querySelectorAll('.tab')[4])">Aula 3 →</button>
-  </div>
-</section>
-
-<!-- ════════════════════════════════════════
-     AULA 3 — Arranjo
-════════════════════════════════════════ -->
-<section class="sec" id="a3">
-  <div class="hero">
-    <em>🏅</em>
-    <h1>Arranjo</h1>
-    <p>Ordem importa, mas <strong>não usamos todos</strong> — escolhemos uma parte e a ordenamos.</p>
-  </div>
-
-  <div class="card">
-    <div class="cl lp">🧠 Conceito</div>
-    <h2>Arranjo Simples de n elementos, p a p</h2>
-    <p>O <strong>arranjo</strong> conta de quantas formas podemos escolher e ordenar <em>p</em> elementos de um conjunto de <em>n</em> elementos distintos (p ≤ n). A ordem dos escolhidos importa.</p>
-    <div class="fbox">
-      <span class="fm">A(n,p) = n! / (n−p)!</span>
-      <span class="fl">n = total de elementos · p = quantos são escolhidos · ordem importa</span>
-    </div>
-    <div class="cbt" style="margin-bottom:14px"><strong>💡 Leitura intuitiva</strong>A(n,p) = n × (n−1) × (n−2) × … × (n−p+1). São exatamente p fatores, começando em n e descendo. Ex: A(6,3) = 6×5×4 = 120.</div>
-    <div class="cbw"><strong>⚠️ Arranjo vs Permutação</strong>Permutação é um caso especial de arranjo onde p = n, ou seja, A(n,n) = n!/0! = n!. Se usar todos os elementos, é permutação. Se usar só parte, é arranjo.</div>
-  </div>
-
-  <div class="card">
-    <div class="cl lg">🔬 Simulador de Arranjo</div>
-    <h2>Escolha n e p e veja o cálculo</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
-      <div>
-        <div class="slg">
-          <div class="sll"><span>Total (n)</span><span class="slv" id="van">6</span></div>
-          <input type="range" id="san" min="2" max="9" step="1" value="6" oninput="updateArr()">
-        </div>
-        <div class="slg">
-          <div class="sll"><span>Escolhidos (p)</span><span class="slv" id="vap">3</span></div>
-          <input type="range" id="sap" min="1" max="6" step="1" value="3" oninput="updateArr()">
-        </div>
-        <div class="rdp" style="margin-top:8px">
-          <span class="rdl" id="arrLbl">A(6,3) =</span>
-          <span class="rdv" id="arrResult">120</span>
-          <span class="rdl" id="arrCalc">6 × 5 × 4</span>
-        </div>
-      </div>
-      <div>
-        <div style="background:rgba(0,0,0,.2);border-radius:10px;padding:14px;min-height:120px">
-          <p style="font-size:.8rem;color:var(--mut);margin-bottom:8px">Elementos possíveis:</p>
-          <div id="arrItems" style="display:flex;gap:7px;flex-wrap:wrap;margin-bottom:12px"></div>
-          <p style="font-size:.8rem;color:var(--mut);margin-bottom:6px">Uma seleção possível (ordem importa):</p>
-          <div id="arrSample" style="display:flex;gap:7px;flex-wrap:wrap"></div>
-        </div>
-        <button class="btn bp" onclick="sampleArr()" style="width:100%;margin-top:8px;padding:9px">🔀 Nova seleção</button>
-      </div>
-    </div>
-  </div>
-
-  <div class="card">
-    <div class="cl la">⚡ Exemplos Resolvidos</div>
-    <ul class="steps">
-      <li><span class="sn">Ex1</span><span><strong>Pódio de 3 em corrida com 10 atletas:</strong><br>A(10,3) = 10×9×8 = 720 pódios distintos</span></li>
-      <li><span class="sn">Ex2</span><span><strong>Chapas eleitorais (presidente + vice) em 8 candidatos:</strong><br>A(8,2) = 8×7 = 56 chapas distintas</span></li>
-      <li><span class="sn">Ex3</span><span><strong>Senhas de 3 letras distintas do alfabeto (26 letras):</strong><br>A(26,3) = 26×25×24 = 15.600 senhas</span></li>
-    </ul>
-    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_4')">
-      <div class="rf">💭 Uma escola tem 12 alunos candidatos para presidente, vice e secretário da turma. Quantas chapas distintas podem ser formadas? (clique)</div>
+    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_a3_1')">
+      <div class="rf">💭 Estoque de produto: Q(t) = −0,5t² + 3t + 80. Qual era o estoque no início (t = 0) e o que representa na expressão? (clique para ver)</div>
       <div class="rb">
-        <p>3 cargos distintos de 12 candidatos, ordem importa → Arranjo</p>
-        <p>A(12,3) = 12×11×10 = <strong style="color:#fcd34d">1.320 chapas</strong></p>
+        <p>Q(0) = −0,5·(0)² + 3·(0) + 80 = <strong style="color:#fcd34d">80 unidades</strong></p>
+        <p>Na expressão, 80 é o <strong>coeficiente c</strong> — o termo independente. Representa o estoque inicial antes de qualquer variação temporal.</p>
+        <div class="cb cb-tip" style="margin-top:8px">
+          <strong>Atalho</strong> Nunca é necessário calcular se você perceber que os termos com t sempre viram zero quando t = 0. O resultado sempre é c.
+        </div>
       </div>
     </div>
   </div>
 
-  <div class="nxt"><button class="btn bp" onclick="goEx('e3',5)">✏️ Exercícios da Aula 3 →</button></div>
+  <div class="nxt">
+    <button class="btn bp" onclick="go('e3',1,document.querySelectorAll('.tab')[1])">✏️ Exercícios da Aula 3 →</button>
+  </div>
 </section>
 
-<!-- ════════════════════════════════════════
-     EXERCÍCIOS 3 — Arranjo
-════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════
+     EXERCÍCIOS 3
+═══════════════════════════════════════════════ -->
 <section class="sec" id="e3">
-  <div class="lhdr"><h1>✏️ Exercícios — Arranjo</h1><p>A(n,p) = n!/(n−p)! — ordem importa, parte dos elementos.</p></div>
-  <div class="qprog"><div class="qp cur" id="e3p1"></div><div class="qp" id="e3p2"></div><div class="qp" id="e3p3"></div><div class="qp" id="e3p4"></div></div>
+  <div class="lhdr">
+    <h1>✏️ Exercícios — Aula 3</h1>
+    <p>Coeficiente c, valor inicial e intercepto y — 4 questões no padrão ENEM.</p>
+    <div style="margin-top:8px"><span class="etag">H15</span><span class="etag" style="margin-left:5px">H19</span></div>
+  </div>
+  <div class="qprog">
+    <div class="qp cur" id="e3p1"></div>
+    <div class="qp" id="e3p2"></div>
+    <div class="qp" id="e3p3"></div>
+    <div class="qp" id="e3p4"></div>
+  </div>
 
+  <!-- Q1 -->
   <div class="qcard" id="e3q1">
-    <div class="qhdr"><span class="qnum">Questão 1 de 4</span><span class="qlv lvb">Básico</span></div>
-    <p class="qt">Calcule <strong>A(7,2)</strong>.</p>
+    <div class="qhdr"><span class="qnum">Questão 1 de 4</span><span class="qlvl lvb">Básico</span></div>
+    <p class="qt">Para cada função abaixo, calcule f(0) e identifique o coeficiente c:</p>
+    <table>
+      <tr><th>Função</th><th>f(0) = ?</th><th>c = ?</th></tr>
+      <tr><td>f(x) = 3x² − 2x + 5</td><td>?</td><td>?</td></tr>
+      <tr><td>g(x) = −x² + 4x</td><td>?</td><td>?</td></tr>
+      <tr><td>h(x) = 2x² + 7</td><td>?</td><td>?</td></tr>
+    </table>
+    <p class="qt" style="margin-top:10px">Qual das afirmações está correta?</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e3',1,'A','D')">A) 14</button>
-      <button class="obt" onclick="exC('e3',1,'B','D')">B) 21</button>
-      <button class="obt" onclick="exC('e3',1,'C','D')">C) 35</button>
-      <button class="obt" onclick="exC('e3',1,'D','D')">D) 42</button>
-      <button class="obt" onclick="exC('e3',1,'E','D')">E) 49</button>
+      <button class="obt" onclick="exC('e3',1,'A','C')">A) f(0) = 3,&nbsp; g(0) = 4,&nbsp; h(0) = 2</button>
+      <button class="obt" onclick="exC('e3',1,'B','C')">B) f(0) = 6,&nbsp; g(0) = 3,&nbsp; h(0) = 9</button>
+      <button class="obt" onclick="exC('e3',1,'C','C')">C) f(0) = 5,&nbsp; g(0) = 0,&nbsp; h(0) = 7</button>
+      <button class="obt" onclick="exC('e3',1,'D','C')">D) f(0) = 5,&nbsp; g(0) = 4,&nbsp; h(0) = 7</button>
+      <button class="obt" onclick="exC('e3',1,'E','C')">E) f(0) = 5,&nbsp; g(0) = 0,&nbsp; h(0) = 2</button>
     </div>
     <div class="fb" id="e3f1"></div>
-    <div class="sol" id="e3s1"><div class="ss">A(7,2) = 7!/(7−2)! = 7!/5! = 7×6 = <strong>42</strong></div><div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong></div></div>
+    <div class="sol" id="e3s1">
+      <div class="ss"><strong>f(0)</strong> = 3·(0)² − 2·(0) + 5 = 0 − 0 + 5 = <strong>5</strong> → c = 5</div>
+      <div class="ss"><strong>g(0)</strong> = −(0)² + 4·(0) = 0 + 0 = <strong>0</strong> → c = 0 (sem termo independente; parábola passa pela origem)</div>
+      <div class="ss"><strong>h(0)</strong> = 2·(0)² + 7 = 0 + 7 = <strong>7</strong> → c = 7</div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>C</strong> — f(0)=5, g(0)=0, h(0)=7</div>
+      <div class="ss">⚠️ Distrator D: g(0)=4 é erro de quem lê o coeficiente b em vez de calcular f(0). Distrator E: h(0)=2 é erro de quem lê o coeficiente a.</div>
+    </div>
   </div>
 
+  <!-- Q2 -->
   <div class="qcard" id="e3q2">
-    <div class="qhdr"><span class="qnum">Questão 2 de 4</span><span class="qlv lvb">Básico</span></div>
-    <div class="qctx">🎖️ Uma competição de xadrez tem 9 jogadores. A premiação concede troféus para o 1º, 2º e 3º lugares, todos diferentes.</div>
-    <p class="qt">Quantas formas distintas os prêmios podem ser distribuídos?</p>
+    <div class="qhdr"><span class="qnum">Questão 2 de 4</span><span class="qlvl lvb">Básico</span></div>
+    <div class="qctx">📺 Uma empresa de streaming registrou a audiência A (em centenas de usuários) de um canal ao longo dos dias d de campanha publicitária:</div>
+    <div class="qfm">A(d) = −d² + 6d + 4</div>
+    <p class="qt">No dia de lançamento da campanha (d = 0), qual era a audiência base e o que ela representa na expressão?</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e3',2,'A','D')">A) 84</button>
-      <button class="obt" onclick="exC('e3',2,'B','D')">B) 168</button>
-      <button class="obt" onclick="exC('e3',2,'C','D')">C) 362</button>
-      <button class="obt" onclick="exC('e3',2,'D','D')">D) 504</button>
-      <button class="obt" onclick="exC('e3',2,'E','D')">E) 729</button>
+      <button class="obt" onclick="exC('e3',2,'A','A')">A) 4 centenas de usuários — representado pelo coeficiente c = 4.</button>
+      <button class="obt" onclick="exC('e3',2,'B','A')">B) 6 centenas de usuários — representado pelo coeficiente b = 6.</button>
+      <button class="obt" onclick="exC('e3',2,'C','A')">C) 1 centena de usuários — valor absoluto do coeficiente a = −1.</button>
+      <button class="obt" onclick="exC('e3',2,'D','A')">D) 9 centenas de usuários — soma de b e |a|.</button>
+      <button class="obt" onclick="exC('e3',2,'E','A')">E) 10 centenas de usuários — soma de todos os coeficientes (|a|+b+c).</button>
     </div>
     <div class="fb" id="e3f2"></div>
-    <div class="sol" id="e3s2"><div class="ss">Ordem importa (1º≠2º≠3º) e usa 3 de 9 → A(9,3) = 9×8×7 = <strong>504</strong></div><div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong></div></div>
+    <div class="sol" id="e3s2">
+      <div class="ss">A(0) = −(0)² + 6·(0) + 4 = 0 + 0 + <strong>4</strong></div>
+      <div class="ss">c = 4 é o termo independente → audiência base antes da campanha = <strong>400 usuários</strong></div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>A</strong></div>
+      <div class="ss">⚠️ Distrator B: confunde c com b. Distrator E: somar coeficientes dá o valor de f(1), não f(0).</div>
+    </div>
   </div>
 
+  <!-- Q3 -->
   <div class="qcard" id="e3q3">
-    <div class="qhdr"><span class="qnum">Questão 3 de 4</span><span class="qlv lvm">Médio</span></div>
-    <div class="qctx">📱 Uma senha de celular tem 4 dígitos, todos diferentes, formados pelos algarismos de 1 a 8. A senha deve ter o primeiro dígito maior que 4.</div>
-    <p class="qt">Quantas senhas diferentes podem ser criadas?</p>
+    <div class="qhdr"><span class="qnum">Questão 3 de 4</span><span class="qlvl lvm">Médio</span></div>
+    <div class="qctx">💉 Secretaria de Saúde do Maranhão — campanha de vacinação contra dengue. O estoque E de doses (em centenas) em função dos dias d desde o início da distribuição é modelado por:</div>
+    <div class="qfm">E(d) = −3d² + 6d + 120</div>
+    <p class="qt">No dia de início da distribuição (d = 0), qual era o estoque e o que esse valor representa na expressão algébrica?</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e3',3,'A','B')">A) 630</button>
-      <button class="obt" onclick="exC('e3',3,'B','B')">B) 840</button>
-      <button class="obt" onclick="exC('e3',3,'C','B')">C) 1.260</button>
-      <button class="obt" onclick="exC('e3',3,'D','B')">D) 1.680</button>
-      <button class="obt" onclick="exC('e3',3,'E','B')">E) 2.100</button>
+      <button class="obt" onclick="exC('e3',3,'A','D')">A) 3 centenas — valor absoluto do coeficiente a.</button>
+      <button class="obt" onclick="exC('e3',3,'B','D')">B) 6 centenas — coeficiente b, que indica a taxa inicial de distribuição.</button>
+      <button class="obt" onclick="exC('e3',3,'C','D')">C) 9 centenas — diferença entre o coeficiente b e o valor absoluto de a.</button>
+      <button class="obt" onclick="exC('e3',3,'D','D')">D) 120 centenas — coeficiente c da expressão, que representa o estoque inicial.</button>
+      <button class="obt" onclick="exC('e3',3,'E','D')">E) 123 centenas — soma de todos os coeficientes da expressão.</button>
     </div>
     <div class="fb" id="e3f3"></div>
     <div class="sol" id="e3s3">
-      <div class="ss">1º dígito (maior que 4, de 1 a 8): opções = {5,6,7,8} → 4 opções</div>
-      <div class="ss">2º dígito: 7 opções restantes · 3º: 6 · 4º: 5</div>
-      <div class="ss">Total = 4 × 7 × 6 × 5 = <strong>840</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>B</strong></div>
+      <div class="ss">E(0) = −3·(0)² + 6·(0) + 120 = 0 + 0 + <strong>120</strong></div>
+      <div class="ss">c = 120 → estoque inicial = <strong>12.000 doses</strong> (120 centenas)</div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>D</strong></div>
+      <div class="ss">⚠️ Distrator E: E(1) = −3+6+120 = 123, não E(0). Distrator B: b indica inclinação inicial, não o valor inicial.</div>
     </div>
   </div>
 
+  <!-- Q4 -->
   <div class="qcard" id="e3q4">
-    <div class="qhdr"><span class="qnum">Questão 4 de 4</span><span class="qlv lvd">Difícil — Padrão ENEM</span></div>
-    <div class="qctx">🎻 (ENEM adaptada) Um conservatório tem 10 alunos de instrumento. O diretor quer montar um trio (violino, viola, cello — instrumentos diferentes) com 3 desses alunos. Cada aluno pode tocar apenas um instrumento no trio. De quantas maneiras o trio pode ser formado?</div>
-    <p class="qt"><em>Atenção: o cargo (instrumento) de cada músico no trio importa.</em></p>
+    <div class="qhdr"><span class="qnum">Questão 4 de 4</span><span class="qlvl lvm">Médio</span></div>
+    <div class="qctx">🎓 FNDE — Programa de Bolsa Universitária. O saldo F (em reais) de uma bolsa em função dos meses m após o início do semestre é modelado por:</div>
+    <div class="qfm">F(m) = −2m² + 8m + 5.000</div>
+    <p class="qt">No momento do depósito inicial (m = 0, antes de qualquer gasto), qual era o saldo disponível e o que esse valor representa na expressão?</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e3',4,'A','C')">A) 120</button>
-      <button class="obt" onclick="exC('e3',4,'B','C')">B) 360</button>
-      <button class="obt" onclick="exC('e3',4,'C','C')">C) 720</button>
-      <button class="obt" onclick="exC('e3',4,'D','C')">D) 1.440</button>
-      <button class="obt" onclick="exC('e3',4,'E','C')">E) 3.628.800</button>
+      <button class="obt" onclick="exC('e3',4,'A','A')">A) R$ 5.000,00 — coeficiente c, que representa o saldo inicial depositado.</button>
+      <button class="obt" onclick="exC('e3',4,'B','A')">B) R$ 8,00 — coeficiente b, que indica a taxa de variação inicial do saldo.</button>
+      <button class="obt" onclick="exC('e3',4,'C','A')">C) R$ 6,00 — diferença entre o coeficiente b e o valor absoluto de a.</button>
+      <button class="obt" onclick="exC('e3',4,'D','A')">D) R$ 2,00 — valor absoluto do coeficiente a.</button>
+      <button class="obt" onclick="exC('e3',4,'E','A')">E) R$ 5.006,00 — soma de todos os coeficientes da expressão.</button>
     </div>
     <div class="fb" id="e3f4"></div>
     <div class="sol" id="e3s4">
-      <div class="ss">Escolher 3 de 10 e atribuir instrumento diferente a cada → ordem importa → Arranjo</div>
-      <div class="ss">A(10,3) = 10×9×8 = <strong>720</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div>
+      <div class="ss">F(0) = −2·(0)² + 8·(0) + 5.000 = 0 + 0 + <strong>5.000</strong></div>
+      <div class="ss">c = 5.000 → saldo inicial = <strong>R$ 5.000,00</strong></div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>A</strong></div>
+      <div class="ss">⚠️ Distrator E: F(1) = −2+8+5.000 = 5.006, não F(0). É o erro de substituir x=1 em vez de x=0.</div>
     </div>
   </div>
 
-  <div class="done" id="e3done">
+  <div class="done-sec" id="e3done">
     <span style="font-size:3.5rem;display:block;margin-bottom:12px">🎉</span>
     <h2>Exercícios 3 concluídos!</h2>
     <div class="fsc">⭐ <span id="e3sc">0</span> pts</div>
     <p id="e3msg" style="color:#cbd5e1;max-width:380px;margin:0 auto 18px"></p>
     <button class="btn bp" style="margin:5px" onclick="resetEx('e3')">🔄 Repetir</button>
-    <button class="btn bg" style="margin:5px" onclick="go('a4',6,document.querySelectorAll('.tab')[6])">Aula 4 →</button>
+    <button class="btn bg" style="margin:5px" onclick="go('a4',2,document.querySelectorAll('.tab')[2])">Aula 4 →</button>
   </div>
 </section>
 
-<!-- ════════════════════════════════════════
-     AULA 4 — Combinação
-════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════
+     AULA 4 — Ler coeficientes pelo gráfico
+═══════════════════════════════════════════════ -->
 <section class="sec" id="a4">
   <div class="hero">
-    <em>👥</em>
-    <h1>Combinação</h1>
-    <p>Quando a <strong>ordem NÃO importa</strong> — só o grupo escolhido.</p>
+    <em>🔍</em>
+    <h1>Ler o gráfico e descobrir os coeficientes</h1>
+    <p>Sem fórmula — apenas olhando a parábola. Três passos, três coeficientes.</p>
+  </div>
+  <div style="margin-bottom:14px">
+    <span class="etag">H20</span>
+    <span class="etag" style="margin-left:6px">H21</span>
+    <span class="badge" style="margin-left:6px">Leitura de Gráfico</span>
   </div>
 
+  <!-- OS 3 PASSOS -->
   <div class="card">
-    <div class="cl lp">🧠 Conceito</div>
-    <h2>Combinação Simples</h2>
-    <p>A <strong>combinação</strong> conta de quantas formas podemos escolher <em>p</em> elementos de <em>n</em> disponíveis, <strong>sem se importar com a ordem</strong> dos escolhidos. Trocar a posição não cria um novo grupo.</p>
-    <div class="fbox">
-      <span class="fm">C(n,p) = n! / (p! × (n−p)!)</span>
-      <span class="fl">também escrita como Cₙᵖ ou "n escolhe p"</span>
-    </div>
-    <div class="cbt"><strong>💡 De onde vem a fórmula?</strong>C(n,p) = A(n,p) / p! — pegamos o arranjo (onde ordem importa) e dividimos por p! (o número de ordens do mesmo grupo que não queremos contar duas vezes).</div>
-  </div>
-
-  <div class="card">
-    <div class="cl lp">🧠 O Grande Comparativo</div>
-    <h2>PFC, Permutação, Arranjo ou Combinação?</h2>
-    <div class="cmp">
-      <div class="cc cc-p">
-        <div class="cc-t">Permutação Pₙ = n!</div>
-        <p style="font-size:.8rem;color:#cbd5e1;line-height:1.6">Usa <strong>todos</strong> os n elementos. Ordem importa.</p>
-        <p style="font-size:.78rem;color:var(--mut);margin-top:6px">Ex: anagramas, filas</p>
+    <div class="cl lp">🧠 Os 3 Passos</div>
+    <h2>Como ler a, b e c diretamente do gráfico</h2>
+    <p>Cada coeficiente deixa uma "impressão digital" visual na parábola. Você já sabe ler <em>a</em> (Aula 2) e <em>c</em> (Aula 3). Agora juntamos os três — e o novato é o coeficiente <em>b</em>.</p>
+    <div class="p3">
+      <div class="p3c">
+        <span class="p3n">1</span>
+        <div class="p3t">Sinal de a</div>
+        <div class="p3d">Olhe a concavidade:<br>∩ (cúpula) → a &lt; 0<br>∪ (tigela) → a &gt; 0</div>
       </div>
-      <div class="cc cc-a">
-        <div class="cc-t">Arranjo A(n,p)</div>
-        <p style="font-size:.8rem;color:#cbd5e1;line-height:1.6">Usa <strong>p de n</strong> elementos. Ordem <strong>importa</strong>.</p>
-        <p style="font-size:.78rem;color:var(--mut);margin-top:6px">Ex: pódio, senha, chapas</p>
+      <div class="p3c">
+        <span class="p3n">2</span>
+        <div class="p3d p3t">Sinal de b</div>
+        <div class="p3d">Use x<sub>v</sub> = −b/2a → b = −2a·x<sub>v</sub><br>a e x<sub>v</sub> com <strong>mesmo sinal</strong> → b &lt; 0<br>a e x<sub>v</sub> com <strong>sinais opostos</strong> → b &gt; 0<br>x<sub>v</sub> = 0 → b = 0</div>
       </div>
-      <div class="cc cc-c">
-        <div class="cc-t">Combinação C(n,p)</div>
-        <p style="font-size:.8rem;color:#cbd5e1;line-height:1.6">Usa <strong>p de n</strong> elementos. Ordem <strong>NÃO importa</strong>.</p>
-        <p style="font-size:.78rem;color:var(--mut);margin-top:6px">Ex: comissões, grupos, times</p>
+      <div class="p3c">
+        <span class="p3n">3</span>
+        <div class="p3t">Sinal de c</div>
+        <div class="p3d">Veja onde cruza o eixo y:<br>Acima da origem → c &gt; 0<br>Na origem (0,0) → c = 0<br>Abaixo da origem → c &lt; 0</div>
       </div>
     </div>
-    <div class="cbw"><strong>⚠️ A pergunta-chave para decidir</strong>"Se eu trocar dois elementos de posição, cria uma situação nova?" Se <strong>SIM</strong> → Arranjo/Permutação. Se <strong>NÃO</strong> → Combinação.</div>
-  </div>
-
-  <div class="card">
-    <div class="cl lg">🔬 Simulador de Combinação</div>
-    <h2>Veja os grupos formados (sem repetição de grupo)</h2>
-    <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:12px">
-      <div>
-        <div class="slg">
-          <div class="sll"><span>Total (n)</span><span class="slv" id="vcn">6</span></div>
-          <input type="range" id="scn" min="3" max="8" step="1" value="6" oninput="updateComb()">
-        </div>
-        <div class="slg">
-          <div class="sll"><span>Escolhidos (p)</span><span class="slv" id="vcp">3</span></div>
-          <input type="range" id="scp" min="1" max="5" step="1" value="3" oninput="updateComb()">
-        </div>
-        <div class="rdp" style="margin-top:8px">
-          <span class="rdl" id="combLbl">C(6,3) =</span>
-          <span class="rdv" id="combResult">20</span>
-          <span class="rdl" id="combCalc">6!/(3!×3!)</span>
-        </div>
-        <div class="rdp" style="margin-top:9px;background:var(--sd);border-color:rgba(56,189,248,.3)">
-          <span class="rdl">Arranjo equivalente A(n,p)</span>
-          <span class="rdv" id="arrEq" style="color:#7dd3fc">120</span>
-          <span class="rdl">C = A ÷ p! = <span id="divEq">120 ÷ 6</span></span>
-        </div>
-      </div>
-      <div>
-        <p style="font-size:.8rem;color:var(--mut);margin-bottom:8px">Um grupo possível (ordem irrelevante):</p>
-        <div id="combSample" style="display:flex;gap:7px;flex-wrap:wrap;min-height:44px;align-items:center"></div>
-        <button class="btn bp" onclick="sampleComb()" style="width:100%;margin-top:10px;padding:9px">🔀 Novo grupo</button>
-        <p style="font-size:.78rem;color:var(--mut);margin-top:8px">Note: {A,B,C} = {C,A,B} = {B,C,A} — é o mesmo grupo!</p>
-      </div>
+    <div class="cb cb-warn">
+      <strong>⚠️ O caso especial: x<sub>v</sub> = 0</strong>
+      Quando o vértice está sobre o eixo y, b = −2a·0 = 0. A parábola é simétrica em relação ao eixo y, e o termo bx desaparece da expressão.
+    </div>
+    <div class="cb cb-tip" style="margin-top:14px">
+      <strong>💡 Por que b = −2a·x<sub>v</sub> funciona?</strong>
+      Da fórmula do vértice: x<sub>v</sub> = −b/(2a). Isolando b: b = −2a·x<sub>v</sub>. O produto de dois números tem sinal negativo quando os fatores têm sinais iguais, e positivo quando têm sinais opostos — daí a regra do Passo 2.
     </div>
   </div>
 
+  <!-- EXEMPLOS RESOLVIDOS -->
   <div class="card">
-    <div class="cl la">⚡ Exemplos Resolvidos</div>
+    <div class="cl la">⚡ Exemplos Resolvidos — Aplicando os 3 Passos</div>
+    <h2>Dois casos completos</h2>
     <ul class="steps">
-      <li><span class="sn">Ex1</span><span><strong>Comissão de 3 em turma de 10:</strong> C(10,3) = 10!/(3!×7!) = (10×9×8)/(3×2×1) = 120</span></li>
-      <li><span class="sn">Ex2</span><span><strong>Mão de 5 cartas em baralho de 52:</strong> C(52,5) = 2.598.960</span></li>
-      <li><span class="sn">Ex3</span><span><strong>Time de 11 jogadores de 18 convocados:</strong> C(18,11) = C(18,7) = 31.824</span></li>
+      <li>
+        <span class="sn">Ex1</span>
+        <span>
+          <strong>Parábola ∩, vértice em x<sub>v</sub> &lt; 0, cruza eixo y acima da origem:</strong><br>
+          Passo 1: ∩ → <span style="color:#fda4af;font-weight:700">a &lt; 0</span><br>
+          Passo 2: x<sub>v</sub> &lt; 0 e a &lt; 0 → mesmo sinal → b = −2·(neg)·(neg) = negativo → <span style="color:#fcd34d;font-weight:700">b &lt; 0</span><br>
+          Passo 3: cruza acima → <span style="color:#6ee7b7;font-weight:700">c &gt; 0</span>
+        </span>
+      </li>
+      <li>
+        <span class="sn">Ex2</span>
+        <span>
+          <strong>Parábola ∩, vértice em x<sub>v</sub> &gt; 0, cruza eixo y abaixo da origem:</strong><br>
+          Passo 1: ∩ → <span style="color:#fda4af;font-weight:700">a &lt; 0</span><br>
+          Passo 2: x<sub>v</sub> &gt; 0 e a &lt; 0 → sinais opostos → b = −2·(neg)·(pos) = positivo → <span style="color:#fcd34d;font-weight:700">b &gt; 0</span><br>
+          Passo 3: cruza abaixo → <span style="color:#fda4af;font-weight:700">c &lt; 0</span>
+        </span>
+      </li>
+      <li>
+        <span class="sn">Ex3</span>
+        <span>
+          <strong>Parábola ∪, vértice em x<sub>v</sub> = 0, cruza eixo y acima da origem:</strong><br>
+          Passo 1: ∪ → <span style="color:#6ee7b7;font-weight:700">a &gt; 0</span><br>
+          Passo 2: x<sub>v</sub> = 0 → b = −2a·0 = <span style="color:#7dd3fc;font-weight:700">b = 0</span><br>
+          Passo 3: cruza acima → <span style="color:#6ee7b7;font-weight:700">c &gt; 0</span>
+        </span>
+      </li>
     </ul>
-    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_5')">
-      <div class="rf">💭 Por que C(18,11) = C(18,7)? Qual a propriedade por trás? (clique)</div>
+    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_a4_1')">
+      <div class="rf">💭 Como memorizar a regra do Passo 2 de forma definitiva? (clique)</div>
       <div class="rb">
-        <p><strong>Propriedade da simetria:</strong> C(n,p) = C(n, n−p)</p>
-        <p>Escolher 11 de 18 é o mesmo que escolher os 7 que ficam de fora. A fórmula confirma: C(18,11) = 18!/(11!×7!) = C(18,7).</p>
-        <div class="cbt" style="margin-top:8px"><strong>Use isso no ENEM!</strong> Quando p é grande, calcule C(n, n−p) com p menor — muito mais rápido.</div>
+        <p>b = −2a·x<sub>v</sub>. O sinal de b é sempre <em>oposto</em> ao produto a·x<sub>v</sub>. Veja:</p>
+        <table style="margin-top:10px">
+          <tr><th>a</th><th>x<sub>v</sub></th><th>a·x<sub>v</sub></th><th>b = −2·(a·x<sub>v</sub>)</th></tr>
+          <tr><td>− </td><td>−</td><td>+</td><td class="tbd">negativo</td></tr>
+          <tr><td>−</td><td>+</td><td>−</td><td class="thi">positivo</td></tr>
+          <tr><td>+</td><td>−</td><td>−</td><td class="thi">positivo</td></tr>
+          <tr><td>+</td><td>+</td><td>+</td><td class="tbd">negativo</td></tr>
+        </table>
+        <div class="cb cb-tip" style="margin-top:10px">
+          <strong>Resumo</strong> b tem o mesmo sinal que o produto a·x<sub>v</sub> <em>negado</em>. Ou simplesmente: se a e x<sub>v</sub> têm sinais iguais → b é negativo. Se têm sinais opostos → b é positivo.
+        </div>
       </div>
     </div>
-    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_6')">
-      <div class="rf">💭 Lanchonete com 8 sabores. Cliente escolhe 2 sabores distintos para o sorvete de casquinha. Quantas duplas? (clique)</div>
+    <div class="rev" onclick="this.classList.toggle('open');if(this.classList.contains('open'))pts(15,'rev_a4_2')">
+      <div class="rf">💭 Parábola ∪ com vértice em x<sub>v</sub> &gt; 0 e c &lt; 0. Quais os sinais? (clique)</div>
       <div class="rb">
-        <p>Ordem não importa (baunilha+morango = morango+baunilha) → Combinação</p>
-        <p>C(8,2) = (8×7)/(2×1) = <strong style="color:#fcd34d">28 duplas</strong></p>
+        <p>Passo 1: ∪ → <strong>a &gt; 0</strong></p>
+        <p>Passo 2: x<sub>v</sub> &gt; 0 e a &gt; 0 → mesmo sinal → b = −2·(pos)·(pos) → <strong>b &lt; 0</strong></p>
+        <p>Passo 3: c &lt; 0 (dado) → <strong>c &lt; 0</strong></p>
+        <div class="cb cb-tip" style="margin-top:8px"><strong>Resultado:</strong> a &gt; 0, b &lt; 0, c &lt; 0</div>
       </div>
     </div>
   </div>
 
-  <div class="nxt"><button class="btn bp" onclick="goEx('e4',7)">✏️ Exercícios da Aula 4 →</button></div>
+  <div class="nxt">
+    <button class="btn bp" onclick="go('e4',3,document.querySelectorAll('.tab')[3])">✏️ Exercícios da Aula 4 →</button>
+  </div>
 </section>
 
-<!-- ════════════════════════════════════════
-     EXERCÍCIOS 4 — Combinação
-════════════════════════════════════════ -->
+<!-- ═══════════════════════════════════════════════
+     EXERCÍCIOS 4
+═══════════════════════════════════════════════ -->
 <section class="sec" id="e4">
-  <div class="lhdr"><h1>✏️ Exercícios — Combinação & Revisão Geral</h1><p>C(n,p) = n! / (p!·(n−p)!) — e o desafio final de distinguir os 4 conceitos.</p></div>
-  <div class="qprog"><div class="qp cur" id="e4p1"></div><div class="qp" id="e4p2"></div><div class="qp" id="e4p3"></div><div class="qp" id="e4p4"></div></div>
+  <div class="lhdr">
+    <h1>✏️ Exercícios — Aula 4</h1>
+    <p>Leitura de coeficientes pelo gráfico — os 3 passos em ação.</p>
+    <div style="margin-top:8px"><span class="etag">H20</span><span class="etag" style="margin-left:5px">H21</span></div>
+  </div>
+  <div class="qprog">
+    <div class="qp cur" id="e4p1"></div>
+    <div class="qp" id="e4p2"></div>
+    <div class="qp" id="e4p3"></div>
+    <div class="qp" id="e4p4"></div>
+  </div>
 
+  <!-- Q1 -->
   <div class="qcard" id="e4q1">
-    <div class="qhdr"><span class="qnum">Questão 1 de 4</span><span class="qlv lvb">Básico</span></div>
-    <p class="qt">Uma turma tem 8 alunos. O professor quer escolher uma <strong>comissão de 3 alunos</strong> para representar a turma. Quantas comissões distintas podem ser formadas?</p>
+    <div class="qhdr"><span class="qnum">Questão 1 de 4</span><span class="qlvl lvb">Básico</span></div>
+    <p class="qt">Três parábolas são descritas abaixo. Aplique os 3 passos e determine os sinais de a, b e c de cada uma:</p>
+    <table>
+      <tr><th>Parábola</th><th>Concavidade</th><th>x<sub>v</sub></th><th>Cruza eixo y</th></tr>
+      <tr><td>P1</td><td>Para baixo ∩</td><td>x<sub>v</sub> &gt; 0</td><td>Acima da origem</td></tr>
+      <tr><td>P2</td><td>Para cima ∪</td><td>x<sub>v</sub> = 0</td><td>Na origem</td></tr>
+      <tr><td>P3</td><td>Para baixo ∩</td><td>x<sub>v</sub> &lt; 0</td><td>Abaixo da origem</td></tr>
+    </table>
+    <p class="qt" style="margin-top:10px">Para <strong>P1</strong>, os sinais de a, b e c são, respectivamente:</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e4',1,'A','C')">A) 24</button>
-      <button class="obt" onclick="exC('e4',1,'B','C')">B) 42</button>
-      <button class="obt" onclick="exC('e4',1,'C','C')">C) 56</button>
-      <button class="obt" onclick="exC('e4',1,'D','C')">D) 168</button>
-      <button class="obt" onclick="exC('e4',1,'E','C')">E) 336</button>
+      <button class="obt" onclick="exC('e4',1,'A','C')">A) a &gt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',1,'B','C')">B) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',1,'C','C')">C) a &lt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',1,'D','C')">D) a &lt; 0,&nbsp; b &gt; 0,&nbsp; c &lt; 0</button>
+      <button class="obt" onclick="exC('e4',1,'E','C')">E) a &gt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
     </div>
     <div class="fb" id="e4f1"></div>
     <div class="sol" id="e4s1">
-      <div class="ss">Comissão: ordem não importa → Combinação</div>
-      <div class="ss">C(8,3) = 8!/(3!×5!) = (8×7×6)/(3×2×1) = 336/6 = <strong>56</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div>
+      <div class="ss"><strong>Passo 1:</strong> concavidade para baixo ∩ → a &lt; 0 ✓</div>
+      <div class="ss"><strong>Passo 2:</strong> x<sub>v</sub> &gt; 0 e a &lt; 0 → sinais <em>opostos</em> → b = −2·(neg)·(pos) = positivo → b &gt; 0 ✓</div>
+      <div class="ss"><strong>Passo 3:</strong> cruza acima da origem → c &gt; 0 ✓</div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>C</strong> — a &lt; 0, b &gt; 0, c &gt; 0</div>
+      <div class="ss">⚠️ Distrator B: erro clássico no Passo 2 — confundir "mesmos sinais" com "sinais opostos".</div>
     </div>
   </div>
 
+  <!-- Q2 -->
   <div class="qcard" id="e4q2">
-    <div class="qhdr"><span class="qnum">Questão 2 de 4</span><span class="qlv lvb">Básico</span></div>
-    <div class="qctx">🃏 Em um baralho padrão de 52 cartas, quantas mãos de <strong>2 cartas</strong> diferentes são possíveis?</div>
-    <p class="qt"><em>Uma mão de cartas não tem ordem — {7♠, K♥} é a mesma mão que {K♥, 7♠}.</em></p>
+    <div class="qhdr"><span class="qnum">Questão 2 de 4</span><span class="qlvl lvb">Básico</span></div>
+    <p class="qt">Uma parábola tem concavidade <strong>para baixo</strong>, vértice <strong>à esquerda do eixo y</strong> (x<sub>v</sub> &lt; 0) e cruza o eixo y <strong>acima da origem</strong>. Os sinais de a, b e c são:</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e4',2,'A','D')">A) 104</button>
-      <button class="obt" onclick="exC('e4',2,'B','D')">B) 1.326</button>
-      <button class="obt" onclick="exC('e4',2,'C','D')">C) 2.652</button>
-      <button class="obt" onclick="exC('e4',2,'D','D')">D) 1.326</button>
-      <button class="obt" onclick="exC('e4',2,'E','D')">E) 2.704</button>
+      <button class="obt" onclick="exC('e4',2,'A','B')">A) a &lt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',2,'B','B')">B) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',2,'C','B')">C) a &gt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',2,'D','B')">D) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &lt; 0</button>
+      <button class="obt" onclick="exC('e4',2,'E','B')">E) a &gt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
     </div>
     <div class="fb" id="e4f2"></div>
     <div class="sol" id="e4s2">
-      <div class="ss">Ordem não importa → C(52,2) = (52×51)/(2×1) = 2.652/2 = <strong>1.326 mãos</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong></div>
+      <div class="ss"><strong>Passo 1:</strong> ∩ → a &lt; 0 ✓</div>
+      <div class="ss"><strong>Passo 2:</strong> x<sub>v</sub> &lt; 0 e a &lt; 0 → <em>mesmo sinal</em> → b = −2·(neg)·(neg) = negativo → b &lt; 0 ✓</div>
+      <div class="ss"><strong>Passo 3:</strong> cruza acima → c &gt; 0 ✓</div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>B</strong> — a &lt; 0, b &lt; 0, c &gt; 0</div>
+      <div class="ss">⚠️ Distrator A: troca o sinal de b — erro de aplicar "sinais opostos" quando eram "mesmo sinal".</div>
     </div>
   </div>
 
+  <!-- Q3 -->
   <div class="qcard" id="e4q3">
-    <div class="qhdr"><span class="qnum">Questão 3 de 4</span><span class="qlv lvm">Médio — Identifique o conceito</span></div>
-    <p class="qt">Para cada situação abaixo, identifique o conceito correto:</p>
-    <table>
-      <tr><th>Situação</th><th>Conceito</th></tr>
-      <tr><td>Anagramas da palavra BRASIL</td><td>?</td></tr>
-      <tr><td>Pódio (1º, 2º, 3º) em corrida com 8 atletas</td><td>?</td></tr>
-      <tr><td>Grupo de 4 amigos escolhido de 10</td><td>?</td></tr>
-      <tr><td>Número de pratos num menu com 3 entradas e 4 pratos</td><td>?</td></tr>
-    </table>
-    <p class="qt" style="margin-top:10px">Qual sequência de conceitos está correta?</p>
+    <div class="qhdr"><span class="qnum">Questão 3 de 4</span><span class="qlvl lvm">Médio</span></div>
+    <div class="qctx">🌡️ INMET — Temperatura em Belém do Pará. A temperatura T (°C) ao longo do dia é modelada por uma parábola com as seguintes características: <br>• Concavidade para baixo (temperatura sobe, atinge máximo e cai);<br>• Vértice após o meio-dia, portanto x<sub>v</sub> &gt; 0 (onde x = hora do dia);<br>• Temperatura às 0h é positiva, portanto c &gt; 0.</div>
+    <p class="qt">Com base nessas informações, os sinais de a, b e c de T(h) são:</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e4',3,'A','C')">A) Combinação · Permutação · Arranjo · PFC</button>
-      <button class="obt" onclick="exC('e4',3,'B','C')">B) Arranjo · Arranjo · Combinação · Permutação</button>
-      <button class="obt" onclick="exC('e4',3,'C','C')">C) Permutação · Arranjo · Combinação · PFC</button>
-      <button class="obt" onclick="exC('e4',3,'D','C')">D) Permutação · Combinação · Arranjo · PFC</button>
-      <button class="obt" onclick="exC('e4',3,'E','C')">E) Arranjo · Permutação · Combinação · Combinação</button>
+      <button class="obt" onclick="exC('e4',3,'A','B')">A) a &gt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',3,'B','B')">B) a &lt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',3,'C','B')">C) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',3,'D','B')">D) a &gt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',3,'E','B')">E) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &lt; 0</button>
     </div>
     <div class="fb" id="e4f3"></div>
     <div class="sol" id="e4s3">
-      <div class="ss">BRASIL (6 letras distintas, usa todas, ordem importa) → <strong>Permutação</strong> P₆ = 720</div>
-      <div class="ss">Pódio (usa 3 de 8, posição diferente = resultado diferente) → <strong>Arranjo</strong> A(8,3) = 336</div>
-      <div class="ss">Grupo de amigos (4 de 10, trocar posição não muda o grupo) → <strong>Combinação</strong> C(10,4) = 210</div>
-      <div class="ss">Pratos (etapas independentes, multiplica) → <strong>PFC</strong> 3×4 = 12</div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>C</strong></div>
+      <div class="ss"><strong>Passo 1:</strong> temperatura sobe, atinge máximo e cai → parábola ∩ → a &lt; 0 ✓</div>
+      <div class="ss"><strong>Passo 2:</strong> x<sub>v</sub> &gt; 0 e a &lt; 0 → sinais <em>opostos</em> → b = −2·(neg)·(pos) = positivo → b &gt; 0 ✓</div>
+      <div class="ss"><strong>Passo 3:</strong> T às 0h é positiva (c &gt; 0) — dado explícito ✓</div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>B</strong> — a &lt; 0, b &gt; 0, c &gt; 0</div>
+      <div class="ss">⚠️ Distrator C: aplica "mesmo sinal" quando deveria ser "sinais opostos" no Passo 2.</div>
     </div>
   </div>
 
+  <!-- Q4 -->
   <div class="qcard" id="e4q4">
-    <div class="qhdr"><span class="qnum">Questão 4 de 4</span><span class="qlv lvd">Difícil — Padrão ENEM</span></div>
-    <div class="qctx">⚽ (ENEM adaptada) Um técnico de futebol tem um elenco de 20 jogadores: 3 goleiros, 8 defensores, 5 meias e 4 atacantes. Ele precisa escalar um time titular com 1 goleiro, 4 defensores, 4 meias e 2 atacantes. Quantos times titulares distintos podem ser escalados?</div>
-    <p class="qt"><em>Dentro de cada posição, a ordem dos jogadores não importa — apenas quem joga, não onde.</em></p>
+    <div class="qhdr"><span class="qnum">Questão 4 de 4</span><span class="qlvl lvd">Difícil — Padrão ENEM</span></div>
+    <div class="qctx">⚡ ANEEL — Relatório de consumo de energia elétrica de uma indústria ao longo do mês. O gráfico do consumo E (kWh) em função do dia d do mês é uma parábola com as seguintes características observadas:<br>• Concavidade para baixo — o consumo sobe, atinge pico e diminui;<br>• Vértice localizado à direita do eixo y: x<sub>v</sub> &gt; 0;<br>• A parábola cruza o eixo y <strong>abaixo</strong> da origem: c &lt; 0.</div>
+    <p class="qt">Com base no gráfico descrito, assinale a alternativa com os sinais <strong>corretos</strong> de a, b e c de E(d) = ad² + bd + c:</p>
     <div class="opts">
-      <button class="obt" onclick="exC('e4',4,'A','D')">A) 2.100</button>
-      <button class="obt" onclick="exC('e4',4,'B','D')">B) 6.300</button>
-      <button class="obt" onclick="exC('e4',4,'C','D')">C) 12.600</button>
-      <button class="obt" onclick="exC('e4',4,'D','D')">D) 6.300</button>
-      <button class="obt" onclick="exC('e4',4,'E','D')">E) 25.200</button>
+      <button class="obt" onclick="exC('e4',4,'A','B')">A) a &gt; 0,&nbsp; b &gt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',4,'B','B')">B) a &lt; 0,&nbsp; b &gt; 0,&nbsp; c &lt; 0</button>
+      <button class="obt" onclick="exC('e4',4,'C','B')">C) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',4,'D','B')">D) a &gt; 0,&nbsp; b &lt; 0,&nbsp; c &gt; 0</button>
+      <button class="obt" onclick="exC('e4',4,'E','B')">E) a &lt; 0,&nbsp; b &lt; 0,&nbsp; c &lt; 0</button>
     </div>
     <div class="fb" id="e4f4"></div>
     <div class="sol" id="e4s4">
-      <div class="ss">Goleiro: C(3,1) = 3</div>
-      <div class="ss">Defensores: C(8,4) = 8!/(4!×4!) = (8×7×6×5)/(4×3×2×1) = 70</div>
-      <div class="ss">Meias: C(5,4) = 5!/(4!×1!) = 5</div>
-      <div class="ss">Atacantes: C(4,2) = 4!/(2!×2!) = 6</div>
-      <div class="ss">Total (PFC): 3 × 70 × 5 × 6 = <strong>6.300 times distintos</strong></div>
-      <div class="ss" style="background:rgba(16,185,129,.1)">Resposta: <strong>D</strong></div>
+      <div class="ss"><strong>Passo 1:</strong> consumo sobe, atinge pico e cai → ∩ → <strong>a &lt; 0</strong> ✓</div>
+      <div class="ss"><strong>Passo 2:</strong> x<sub>v</sub> &gt; 0 e a &lt; 0 → sinais <em>opostos</em> → b = −2·(neg)·(pos) = positivo → <strong>b &gt; 0</strong> ✓</div>
+      <div class="ss"><strong>Passo 3:</strong> cruza abaixo da origem → <strong>c &lt; 0</strong> ✓ (dado explícito)</div>
+      <div class="ss" style="background:rgba(16,185,129,.1)">Gabarito: <strong>B</strong> — a &lt; 0, b &gt; 0, c &lt; 0</div>
+      <div class="ss">⚠️ Distrator E: erro duplo — acerta a e c mas erra b (confunde a regra de sinais do Passo 2). Esse é o distrator mais perigoso.</div>
     </div>
   </div>
 
-  <div class="done" id="e4done">
+  <div class="done-sec" id="e4done">
     <span style="font-size:3.5rem;display:block;margin-bottom:12px">🏆</span>
-    <h2>Revisão de Combinatória Concluída!</h2>
-    <p style="color:#cbd5e1;margin-bottom:6px">PFC · Fatorial · Permutação · Arranjo · Combinação</p>
+    <h2>Aulas 3 e 4 concluídas!</h2>
+    <p style="color:#cbd5e1;margin-bottom:4px">Coeficiente c · Leitura de gráfico · 3 passos</p>
     <div class="fsc">⭐ <span id="e4sc">0</span> pts no total</div>
     <div id="e4stars" style="font-size:1.9rem;margin:10px 0"></div>
     <p id="e4msg" style="color:#cbd5e1;max-width:400px;margin:0 auto 18px"></p>
     <button class="btn bp" style="margin:5px" onclick="resetEx('e4')">🔄 Repetir Ex. 4</button>
-    <button class="btn bg" style="margin:5px" onclick="go('a1',0,document.querySelectorAll('.tab')[0])">↩ Rever do início</button>
+    <button class="btn bg" style="margin:5px" onclick="go('a3',0,document.querySelectorAll('.tab')[0])">↩ Rever Aula 3</button>
   </div>
 </section>
 
 </main>
 
 <script>
-// ═══════════════════════════════════════
-// ESTADO
-// ═══════════════════════════════════════
-const maxScore=800;
-// ═══════════════════════════════════════
-// ESTADO — persistido em sessionStorage
-// ═══════════════════════════════════════
-const SS_KEY = 'comb_state';
-function loadState(){
-  try{ return JSON.parse(sessionStorage.getItem(SS_KEY))||{}; }
-  catch(e){ return {}; }
-}
-function saveState(st){ sessionStorage.setItem(SS_KEY, JSON.stringify(st)); }
+// ═══════════════════════════════════════════════
+// ESTADO — sessionStorage para persistir na sessão
+// ═══════════════════════════════════════════════
+const SS_KEY = 'f2g_a3a4';
+function loadST(){ try{ return JSON.parse(sessionStorage.getItem(SS_KEY))||{}; }catch(e){ return {}; } }
+function saveST(s){ sessionStorage.setItem(SS_KEY, JSON.stringify(s)); }
 
-// carrega estado salvo
-let ST = loadState();
-// ST.score   — pontuação acumulada
-// ST.earned  — set de IDs de ações já pontuadas (ex: 'ex_e1_1', 'rev_a1_1', 'lab_fat')
-// ST.exSt    — respostas dos exercícios
+let ST = loadST();
 if(!ST.score)  ST.score  = 0;
 if(!ST.earned) ST.earned = {};
 if(!ST.exSt)   ST.exSt   = {};
 
-// compatibilidade com código legado que usava exSt diretamente
-const exSt = ST.exSt;
+const maxScore = 560; // 4+4 questões × 60pts + 4 rev × 15pts
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════
 // PONTOS — só concede se a ação ainda não foi pontuada
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════
 function pts(n, actionId){
-  // actionId: identificador único da ação. Se já foi pontuada, ignora.
   if(actionId && ST.earned[actionId]) return false;
   if(actionId) ST.earned[actionId] = true;
   ST.score += n;
-  saveState(ST);
+  saveST(ST);
   document.getElementById('scoreDisp').textContent = ST.score;
-  document.getElementById('progBar').style.width = Math.min(100, ST.score / maxScore * 100) + '%';
-  // efeito visual
+  document.getElementById('progBar').style.width = Math.min(100, ST.score/maxScore*100) + '%';
   const el = document.createElement('div');
-  el.className = 'fpt'; el.textContent = '+' + n + ' pts';
-  el.style.left = (Math.random()*60+20) + '%';
-  el.style.top  = (Math.random()*25+15) + '%';
+  el.className = 'fpt';
+  el.textContent = '+'+n+' pts';
+  el.style.left = (Math.random()*60+20)+'%';
+  el.style.top  = (Math.random()*25+15)+'%';
   document.body.appendChild(el);
-  setTimeout(() => el.remove(), 1400);
+  setTimeout(()=>el.remove(), 1400);
   return true;
 }
+
 function initScore(){
   document.getElementById('scoreDisp').textContent = ST.score;
-  document.getElementById('progBar').style.width = Math.min(100, ST.score / maxScore * 100) + '%';
+  document.getElementById('progBar').style.width = Math.min(100, ST.score/maxScore*100) + '%';
 }
 
-function toast(m){
-  const t=document.createElement('div');
-  t.style.cssText='position:fixed;bottom:26px;left:50%;transform:translateX(-50%);background:#1e1b4b;border:1px solid #7c3aed;color:#ddd6fe;padding:10px 20px;border-radius:11px;font-weight:700;z-index:300;animation:fadeIn .3s ease;font-size:.88rem;';
-  t.textContent=m; document.body.appendChild(t); setTimeout(()=>t.remove(),2400);
-}
-
-// ═══════════════════════════════════════
-// NAVEGAÇÃO — sem pontos por trocar de aba
-// ═══════════════════════════════════════
-function go(id,idx,el){
+// ═══════════════════════════════════════════════
+// NAVEGAÇÃO — sem pontos por troca de aba
+// ═══════════════════════════════════════════════
+function go(id, idx, el){
   document.querySelectorAll('.sec').forEach(s=>s.classList.remove('active'));
   document.querySelectorAll('.tab').forEach(t=>t.classList.remove('active'));
   document.getElementById(id).classList.add('active');
   if(el) el.classList.add('active');
-  for(let i=0;i<8;i++) document.getElementById('ps'+i).className='ps '+(i<idx?'done':i===idx?'cur':'');
-  document.getElementById('progLbl').textContent='Seção '+(idx+1)+' de 8';
+  for(let i=0;i<4;i++) document.getElementById('ps'+i).className='ps '+(i<idx?'done':i===idx?'cur':'');
+  document.getElementById('progLbl').textContent = 'Seção '+(idx+1)+' de 4';
   window.scrollTo({top:0,behavior:'smooth'});
 }
-function goEx(id,idx){
-  const tabs=document.querySelectorAll('.tab');
-  tabs.forEach((t,i)=>t.classList.toggle('active',i===idx));
-  go(id,idx,tabs[idx]);
-}
 
-// ═══════════════════════════════════════
+// ═══════════════════════════════════════════════
 // EXERCÍCIOS
-// ═══════════════════════════════════════
-function exC(sec,qn,chosen,correct){
-  const key=sec+'_'+qn;
-  if(ST.exSt[key]) return;           // já respondida — bloqueia
-  ST.exSt[key]={ok:chosen===correct};
-  saveState(ST);
-  const card=document.getElementById(sec+'q'+qn);
-  card.querySelectorAll('.obt').forEach(b=>b.disabled=true);
+// ═══════════════════════════════════════════════
+const CORRECT_MAP = {
+  e3_1:'C', e3_2:'A', e3_3:'D', e3_4:'A',
+  e4_1:'C', e4_2:'B', e4_3:'B', e4_4:'B'
+};
+
+function exC(sec, qn, chosen, correct){
+  const key = sec+'_'+qn;
+  if(ST.exSt[key]) return;
+  ST.exSt[key] = { ok: chosen===correct };
+  saveST(ST);
+
+  const card = document.getElementById(sec+'q'+qn);
+  card.querySelectorAll('.obt').forEach(b => b.disabled = true);
   card.querySelectorAll('.obt').forEach((b,i)=>{
-    const l=['A','B','C','D','E'][i];
+    const l = ['A','B','C','D','E'][i];
     if(l===correct) b.classList.add('ok');
-    if(l===chosen&&chosen!==correct) b.classList.add('no');
+    if(l===chosen && chosen!==correct) b.classList.add('no');
   });
-  const fb=document.getElementById(sec+'f'+qn);
-  const sol=document.getElementById(sec+'s'+qn);
-  fb.style.display='block'; sol.style.display='block';
+
+  const fb  = document.getElementById(sec+'f'+qn);
+  const sol = document.getElementById(sec+'s'+qn);
+  fb.style.display = 'block';
+  sol.style.display = 'block';
+
   if(chosen===correct){
-    const gained = pts(60, 'ex_'+sec+'_'+qn);
-    fb.textContent='✅ Correto!' + (gained?' +60 pts':''); fb.className='fb fbok';
+    const gained = pts(60, 'ex_'+key);
+    fb.textContent = '✅ Correto!' + (gained?' +60 pts':'');
+    fb.className = 'fb fbok';
     card.classList.add('right');
-    document.getElementById(sec+'p'+qn).className='qp done';
+    document.getElementById(sec+'p'+qn).className = 'qp done';
   } else {
-    fb.textContent='❌ Não foi dessa vez — veja a resolução abaixo.'; fb.className='fb fbno';
+    fb.textContent = '❌ Não foi dessa vez — veja a resolução abaixo.';
+    fb.className = 'fb fbno';
     card.classList.add('wrong');
-    document.getElementById(sec+'p'+qn).className='qp wrong';
+    document.getElementById(sec+'p'+qn).className = 'qp wrong';
   }
-  const answered=Object.keys(ST.exSt).filter(k=>k.startsWith(sec+'_')).length;
-  if(answered<4 && qn<4) document.getElementById(sec+'p'+(qn+1)).className='qp cur';
-  if(answered===4) setTimeout(()=>showDone(sec),700);
-  card.scrollIntoView({behavior:'smooth',block:'nearest'});
+
+  const answered = Object.keys(ST.exSt).filter(k=>k.startsWith(sec+'_')).length;
+  if(answered < 4 && qn < 4)
+    document.getElementById(sec+'p'+(qn+1)).className = 'qp cur';
+  if(answered === 4)
+    setTimeout(()=>showDone(sec), 700);
+
+  card.scrollIntoView({behavior:'smooth', block:'nearest'});
 }
 
 function showDone(sec){
-  const done=document.getElementById(sec+'done');
-  const ok=Object.keys(ST.exSt).filter(k=>k.startsWith(sec+'_')&&ST.exSt[k].ok).length;
-  const pts_ex=ok*60;
-  document.getElementById(sec+'sc').textContent=pts_ex;
-  if(sec==='e4'){document.getElementById('e4stars').textContent=ok>=3?'⭐⭐⭐':ok>=2?'⭐⭐':'⭐';document.getElementById('e4sc').textContent=ST.score;}
-  const msg=ok>=3?'🏆 Domínio excelente! Você está pronto para o ENEM.':ok>=2?'💪 Bom trabalho! Revise os erros antes de avançar.':'📚 Continue praticando! Volte à aula e reforce o conceito.';
-  const msgEl=document.getElementById(sec+'msg');
-  if(msgEl) msgEl.textContent=msg;
-  done.style.display='block';
+  const done = document.getElementById(sec+'done');
+  const ok   = Object.keys(ST.exSt).filter(k=>k.startsWith(sec+'_') && ST.exSt[k].ok).length;
+  document.getElementById(sec+'sc').textContent = ok*60;
+  if(sec==='e4'){
+    document.getElementById('e4stars').textContent = ok>=3?'⭐⭐⭐':ok>=2?'⭐⭐':'⭐';
+    document.getElementById('e4sc').textContent = ST.score;
+  }
+  const pct = ok/4;
+  const msg = pct>=0.75 ? '🏆 Domínio excelente! Você está pronto para o ENEM.'
+            : pct>=0.5  ? '💪 Bom trabalho! Revise os erros antes de avançar.'
+            : '📚 Continue praticando! Volte à aula e reforce o conceito.';
+  const el = document.getElementById(sec+'msg');
+  if(el) el.textContent = msg;
+  done.style.display = 'block';
   done.scrollIntoView({behavior:'smooth'});
   for(let i=0;i<3;i++) setTimeout(()=>confetti(),i*200);
 }
 
 function resetEx(sec){
-  // apaga só as respostas desta seção do estado persistido
+  // Remove só as respostas desta seção
   Object.keys(ST.exSt).forEach(k=>{ if(k.startsWith(sec+'_')) delete ST.exSt[k]; });
-  saveState(ST);
+  saveST(ST);
   for(let i=1;i<=4;i++){
-    const card=document.getElementById(sec+'q'+i);
+    const card = document.getElementById(sec+'q'+i);
     card.classList.remove('right','wrong');
-    card.querySelectorAll('.obt').forEach(b=>{b.disabled=false;b.classList.remove('ok','no');});
-    document.getElementById(sec+'f'+i).style.display='none';
-    document.getElementById(sec+'s'+i).style.display='none';
-    document.getElementById(sec+'p'+i).className='qp'+(i===1?' cur':'');
+    card.querySelectorAll('.obt').forEach(b=>{ b.disabled=false; b.classList.remove('ok','no'); });
+    document.getElementById(sec+'f'+i).style.display = 'none';
+    document.getElementById(sec+'s'+i).style.display = 'none';
+    document.getElementById(sec+'p'+i).className = 'qp' + (i===1?' cur':'');
   }
-  document.getElementById(sec+'done').style.display='none';
-  window.scrollTo({top:0,behavior:'smooth'});
+  document.getElementById(sec+'done').style.display = 'none';
+  window.scrollTo({top:0, behavior:'smooth'});
 }
 
 function confetti(){
-  const colors=['#8b5cf6','#10b981','#f59e0b','#38bdf8','#f43f5e'];
-  const el=document.createElement('div');
-  el.style.cssText=`position:fixed;width:9px;height:9px;border-radius:2px;background:${colors[Math.floor(Math.random()*5)]};left:${Math.random()*100}%;top:-20px;z-index:999;animation:confetti ${1.5+Math.random()*2}s ease-out forwards;`;
-  document.body.appendChild(el); setTimeout(()=>el.remove(),4000);
+  const cols = ['#8b5cf6','#10b981','#f59e0b','#38bdf8','#f43f5e'];
+  const el = document.createElement('div');
+  el.style.cssText = `position:fixed;width:9px;height:9px;border-radius:2px;
+    background:${cols[Math.floor(Math.random()*5)]};
+    left:${Math.random()*100}%;top:-20px;z-index:999;
+    animation:confetti ${1.5+Math.random()*2}s ease-out forwards;`;
+  document.body.appendChild(el);
+  setTimeout(()=>el.remove(), 4000);
 }
 
-// ═══════════════════════════════════════
-// LAB 1 — ÁRVORE DE POSSIBILIDADES (redesenho completo)
-// ═══════════════════════════════════════
-function buildTree(){
-  const n1=parseInt(document.getElementById('sn1').value);
-  const n2=parseInt(document.getElementById('sn2').value);
-  const n3=parseInt(document.getElementById('sn3').value);
-  document.getElementById('vn1').textContent=n1;
-  document.getElementById('vn2').textContent=n2;
-  document.getElementById('vn3').textContent=n3;
-  const total=n1*n2*n3;
-  document.getElementById('treeTotal').textContent=total;
-  document.getElementById('treeMult').textContent=n1+' × '+n2+' × '+n3;
-  document.getElementById('treeMsg').textContent='São '+total+' caminhos possíveis (folhas da árvore)';
-
-  const svg=document.getElementById('treeSvg');
-  svg.innerHTML='';
-
-  // dimensões do viewBox fixo
-  const W=280, H=280;
-  const padH=14; // padding horizontal
-
-  // cores por nível
-  const COLS=['#8b5cf6','#38bdf8','#10b981','#f59e0b'];
-  const LABELS_L1='ABCDE'.split('');
-  const LABELS_L2='abcde'.split('');
-
-  // raiz
-  const rx=W/2, ry=18, rr=9;
-  drawN(svg,rx,ry,'R',COLS[0],rr);
-
-  // calcula posições das folhas (nível 3) distribuídas uniformemente
-  const leaves=total;
-  const leafW=(W-2*padH)/(leaves);
-  // centro de cada folha
-  const leafCX=Array.from({length:leaves},(_,i)=>padH+leafW*(i+0.5));
-
-  const y1=75, y2=155, y3=235;
-
-  let leafIdx=0;
-  for(let i=0;i<n1;i++){
-    // range de folhas deste nó de nível 1: i*(n2*n3) até (i+1)*(n2*n3)-1
-    const l1Start=i*n2*n3;
-    const l1End=(i+1)*n2*n3-1;
-    const x1=(leafCX[l1Start]+leafCX[l1End])/2;
-
-    drawLine(svg,rx,ry+rr,x1,y1-7,COLS[0],0.5);
-    drawN(svg,x1,y1,LABELS_L1[i]||String(i+1),COLS[1],7);
-
-    for(let j=0;j<n2;j++){
-      const l2Start=i*n2*n3+j*n3;
-      const l2End=i*n2*n3+(j+1)*n3-1;
-      const x2=(leafCX[l2Start]+leafCX[l2End])/2;
-
-      drawLine(svg,x1,y1+7,x2,y2-6,COLS[1],0.4);
-      drawN(svg,x2,y2,LABELS_L2[j]||String(j+1),COLS[2],5);
-
-      for(let k=0;k<n3;k++){
-        const x3=leafCX[i*n2*n3+j*n3+k];
-        drawLine(svg,x2,y2+5,x3,y3-5,COLS[2],0.35);
-        drawN(svg,x3,y3,(k+1).toString(),COLS[3],4);
-      }
-    }
-  }
-
-  // label de contagem
-  const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-  t.setAttribute('x',W/2); t.setAttribute('y',H-4);
-  t.setAttribute('text-anchor','middle'); t.setAttribute('font-size','9');
-  t.setAttribute('fill','#64748b'); t.setAttribute('font-family','Nunito,sans-serif');
-  t.textContent=total+' folhas';
-  svg.appendChild(t);
-}
-function drawN(svg,x,y,label,color,r){
-  const c=document.createElementNS('http://www.w3.org/2000/svg','circle');
-  c.setAttribute('cx',x); c.setAttribute('cy',y); c.setAttribute('r',r);
-  c.setAttribute('fill',color+'33'); c.setAttribute('stroke',color); c.setAttribute('stroke-width','1.5');
-  svg.appendChild(c);
-  if(r>=4){
-    const t=document.createElementNS('http://www.w3.org/2000/svg','text');
-    t.setAttribute('x',x); t.setAttribute('y',y+3.5);
-    t.setAttribute('text-anchor','middle'); t.setAttribute('font-size',r<5?'6':r<7?'8':'10');
-    t.setAttribute('fill','#e2e8f0'); t.setAttribute('font-family','Nunito,sans-serif');
-    t.setAttribute('font-weight','700'); t.textContent=label; svg.appendChild(t);
-  }
-}
-function drawLine(svg,x1,y1,x2,y2,color,alpha){
-  const l=document.createElementNS('http://www.w3.org/2000/svg','line');
-  l.setAttribute('x1',x1); l.setAttribute('y1',y1);
-  l.setAttribute('x2',x2); l.setAttribute('y2',y2);
-  l.setAttribute('stroke',color); l.setAttribute('stroke-width','1.2');
-  l.setAttribute('stroke-opacity',alpha||0.5);
-  svg.appendChild(l);
-}
-
-// ═══════════════════════════════════════
-// LAB 2 — FATORIAL
-// ═══════════════════════════════════════
-function updateFat(){
-  const n=parseInt(document.getElementById('sfat').value);
-  document.getElementById('vfat').textContent=n;
-  document.getElementById('vfat2').textContent=n;
-  let f=1; for(let i=1;i<=n;i++) f*=i;
-  document.getElementById('fatResult').textContent=f.toLocaleString('pt-BR');
-  const chain=document.getElementById('fatChain');
-  chain.innerHTML='';
-  for(let i=n;i>=1;i--){
-    const box=document.createElement('div');
-    box.className='fc-box'; box.textContent=i;
-    box.style.animationDelay=(n-i)*0.08+'s';
-    chain.appendChild(box);
-    if(i>1){const op=document.createElement('span');op.className='fc-op';op.textContent='×';chain.appendChild(op);}
-  }
-  const eq=document.createElement('span');
-  eq.className='fc-op'; eq.textContent=' = ';
-  const res=document.createElement('div');
-  res.className='fc-box hi'; res.textContent=f.toLocaleString('pt-BR');
-  chain.appendChild(eq); chain.appendChild(res);
-}
-
-// ═══════════════════════════════════════
-// LAB 2 — PERMUTAÇÃO
-// ═══════════════════════════════════════
-const ELEMS=['A','B','C','D','E','F'];
-let permArr=[...ELEMS.slice(0,4)];
-function updatePerm(){
-  const n=parseInt(document.getElementById('sperm').value);
-  document.getElementById('vperm').textContent=n;
-  document.getElementById('vperm2').textContent=n;
-  permArr=[...ELEMS.slice(0,n)];
-  let f=1; for(let i=1;i<=n;i++) f*=i;
-  document.getElementById('permResult').textContent=f.toLocaleString('pt-BR');
-  const calc=Array.from({length:n},(_,i)=>n-i).join('×');
-  document.getElementById('permCalc').textContent=n+'! = '+calc;
-  shufflePerm();
-}
-function shufflePerm(){
-  const n=parseInt(document.getElementById('sperm').value);
-  const arr=[...ELEMS.slice(0,n)];
-  for(let i=arr.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[arr[i],arr[j]]=[arr[j],arr[i]];}
-  const disp=document.getElementById('permDisplay');
-  disp.innerHTML='';
-  arr.forEach((el,i)=>{
-    const b=document.createElement('div');
-    b.style.cssText=`background:rgba(139,92,246,.2);border:1px solid rgba(139,92,246,.4);border-radius:8px;padding:8px 16px;font-family:'Fredoka One',cursive;font-size:1.2rem;color:#ddd6fe;animation:popIn .3s ease ${i*0.06}s both;`;
-    b.textContent=el; disp.appendChild(b);
-    if(i<arr.length-1){const ar=document.createElement('span');ar.style.color='var(--mut)';ar.style.fontSize='1.2rem';ar.textContent='→';disp.appendChild(ar);}
-  });
-}
-
-// ═══════════════════════════════════════
-// LAB 3 — ARRANJO
-// ═══════════════════════════════════════
-function factorial(n){let f=1;for(let i=2;i<=n;i++)f*=i;return f;}
-function updateArr(){
-  let n=parseInt(document.getElementById('san').value);
-  const pMax=n-1;
-  const sap=document.getElementById('sap');
-  sap.max=Math.min(pMax,6);
-  let p=Math.min(parseInt(sap.value),pMax);
-  sap.value=p;
-  document.getElementById('van').textContent=n;
-  document.getElementById('vap').textContent=p;
-  const result=factorial(n)/factorial(n-p);
-  document.getElementById('arrLbl').textContent='A('+n+','+p+') =';
-  document.getElementById('arrResult').textContent=result.toLocaleString('pt-BR');
-  const factors=Array.from({length:p},(_,i)=>n-i).join('×');
-  document.getElementById('arrCalc').textContent=factors;
-  const items=document.getElementById('arrItems');
-  items.innerHTML='';
-  for(let i=0;i<n;i++){
-    const b=document.createElement('div');
-    b.style.cssText=`background:rgba(56,189,248,.15);border:1px solid rgba(56,189,248,.3);border-radius:7px;padding:5px 11px;font-family:'Fredoka One',cursive;font-size:.9rem;color:#7dd3fc;`;
-    b.textContent=String.fromCharCode(65+i); items.appendChild(b);
-  }
-  sampleArr();
-}
-function sampleArr(){
-  const n=parseInt(document.getElementById('san').value);
-  const p=parseInt(document.getElementById('sap').value);
-  const pool=Array.from({length:n},(_,i)=>String.fromCharCode(65+i));
-  const sample=[];
-  const used=new Set();
-  while(sample.length<p){const r=Math.floor(Math.random()*n);if(!used.has(r)){used.add(r);sample.push(pool[r]);}}
-  const disp=document.getElementById('arrSample');
-  disp.innerHTML='';
-  sample.forEach((el,i)=>{
-    const b=document.createElement('div');
-    b.style.cssText=`background:rgba(245,158,11,.2);border:1px solid rgba(245,158,11,.35);border-radius:8px;padding:7px 14px;font-family:'Fredoka One',cursive;font-size:1.1rem;color:#fcd34d;animation:popIn .3s ease ${i*0.07}s both;`;
-    b.textContent=el; disp.appendChild(b);
-  });
-}
-
-// ═══════════════════════════════════════
-// LAB 4 — COMBINAÇÃO
-// ═══════════════════════════════════════
-function C(n,p){if(p>n||p<0)return 0;return factorial(n)/(factorial(p)*factorial(n-p));}
-function A(n,p){if(p>n||p<0)return 0;return factorial(n)/factorial(n-p);}
-function updateComb(){
-  let n=parseInt(document.getElementById('scn').value);
-  const scp=document.getElementById('scp');
-  scp.max=Math.min(n-1,5);
-  let p=Math.min(parseInt(scp.value),n-1);
-  scp.value=p;
-  document.getElementById('vcn').textContent=n;
-  document.getElementById('vcp').textContent=p;
-  const cv=C(n,p), av=A(n,p), pf=factorial(p);
-  document.getElementById('combLbl').textContent='C('+n+','+p+') =';
-  document.getElementById('combResult').textContent=cv.toLocaleString('pt-BR');
-  document.getElementById('combCalc').textContent=n+'!/('+p+'!×'+(n-p)+'!)';
-  document.getElementById('arrEq').textContent=av.toLocaleString('pt-BR');
-  document.getElementById('divEq').textContent=av.toLocaleString('pt-BR')+' ÷ '+pf;
-  sampleComb();
-}
-function sampleComb(){
-  const n=parseInt(document.getElementById('scn').value);
-  const p=parseInt(document.getElementById('scp').value);
-  const pool=Array.from({length:n},(_,i)=>String.fromCharCode(65+i));
-  const sample=[];
-  const used=new Set();
-  while(sample.length<p){const r=Math.floor(Math.random()*n);if(!used.has(r)){used.add(r);sample.push(pool[r]);}}
-  sample.sort();
-  const disp=document.getElementById('combSample');
-  disp.innerHTML='';
-  const lbl=document.createElement('div');
-  lbl.style.cssText='color:#7dd3fc;font-weight:700;font-size:.85rem;';
-  lbl.textContent='{'+sample.join(', ')+'}'; disp.appendChild(lbl);
-}
-
-// ═══════════════════════════════════════
-// INIT
-// ═══════════════════════════════════════
-// ═══════════════════════════════════════
-// RESTORE — reconstrói o visual do estado salvo ao recarregar
-// ═══════════════════════════════════════
-function restoreExercises(){
-  const secs=['e1','e2','e3','e4'];
-  secs.forEach(sec=>{
-    let answered=0;
+// ═══════════════════════════════════════════════
+// RESTORE — reconstrói visual das questões já respondidas
+// ═══════════════════════════════════════════════
+function restore(){
+  ['e3','e4'].forEach(sec=>{
+    let answered = 0;
     for(let i=1;i<=4;i++){
-      const key=sec+'_'+i;
-      const saved=ST.exSt[key];
+      const key = sec+'_'+i;
+      const saved = ST.exSt[key];
       if(!saved) continue;
       answered++;
-      const card=document.getElementById(sec+'q'+i);
-      if(!card) continue;
-      // marca botões
-      const correct_map={
-        e1_1:'C',e1_2:'C',e1_3:'D',e1_4:'B',
-        e2_1:'D',e2_2:'C',e2_3:'C',e2_4:'D',
-        e3_1:'D',e3_2:'D',e3_3:'B',e3_4:'C',
-        e4_1:'C',e4_2:'D',e4_3:'C',e4_4:'D'
-      };
-      const correct=correct_map[key];
+      const card = document.getElementById(sec+'q'+i);
+      const correct = CORRECT_MAP[key];
       card.querySelectorAll('.obt').forEach((b,idx)=>{
-        b.disabled=true;
-        const l=['A','B','C','D','E'][idx];
-        if(l===correct) b.classList.add('ok');
+        b.disabled = true;
+        if(['A','B','C','D','E'][idx]===correct) b.classList.add('ok');
       });
-      document.getElementById(sec+'f'+i).style.display='block';
-      document.getElementById(sec+'s'+i).style.display='block';
-      const fb=document.getElementById(sec+'f'+i);
+      const fb = document.getElementById(sec+'f'+i);
+      const sol = document.getElementById(sec+'s'+i);
+      fb.style.display = 'block';
+      sol.style.display = 'block';
       if(saved.ok){
-        fb.textContent='✅ Correto!'; fb.className='fb fbok';
+        fb.textContent = '✅ Correto!';
+        fb.className = 'fb fbok';
         card.classList.add('right');
-        document.getElementById(sec+'p'+i).className='qp done';
+        document.getElementById(sec+'p'+i).className = 'qp done';
       } else {
-        fb.textContent='❌ Não foi dessa vez — veja a resolução abaixo.'; fb.className='fb fbno';
+        fb.textContent = '❌ Não foi dessa vez — veja a resolução abaixo.';
+        fb.className = 'fb fbno';
         card.classList.add('wrong');
-        document.getElementById(sec+'p'+i).className='qp wrong';
+        document.getElementById(sec+'p'+i).className = 'qp wrong';
       }
     }
-    // se todos respondidos, mostra tela de conclusão
     if(answered===4) showDone(sec);
   });
 }
 
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
 initScore();
-restoreExercises();
-buildTree();
-updateFat();
-updatePerm();
-updateArr();
-updateComb();
+restore();
 </script>
 </body>
 </html>
